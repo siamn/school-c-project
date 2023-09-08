@@ -238,12 +238,48 @@ void main_menu()
     printf("------------------------------------ \n");
 }
 
-// void user_add_subject(Student **students, char *studentName);
+void user_add_subject(Student **students, char *studentName)
+{
+    int numOfSubjects = -1;
+    while (numOfSubjects < 0)
+    {
+        printf("Please enter how many subjects you would like to register for '%s'\n", studentName);
+        numOfSubjects = getPositiveInt();
+        if (numOfSubjects == -1)
+        {
+            printf("Encountered an error. Try again.\n");
+        }
+    }
+
+    for (int i = 0; i < numOfSubjects; i++)
+    {
+        char *subjectName = (char *)malloc(sizeof(char) * 20);
+        float grade = 0.0;
+
+        printf("Please enter the subject name (%d out of %d subjects): ", (i + 1), numOfSubjects);
+        char *name = getLimitedLine(20);
+        strcpy(subjectName, name);
+
+        int response = getYesNoResponse("Would you like to enter a grade? (Y/N): \n");
+
+        if (response > 0)
+        {
+            printf("\nPlease enter the grade for student %s (studying %s) \n", studentName, subjectName);
+            grade = getFloat();
+        }
+        else
+        {
+            // printf("You have entered %s. No grade to be entered. \n", grade_option);
+        }
+
+        add_subject(students, studentName, subjectName, grade);
+    }
+    printf("Successfully added all %d subjects for student '%s' \n", numOfSubjects, studentName);
+}
 
 int option_1(Student **students, int totalStudents)
 {
     long numOfStudents = -1;
-    int numOfSubjects;
 
     char students_buf[10] = {0};
     char subjects_buf[4] = {0};
@@ -279,32 +315,7 @@ int option_1(Student **students, int totalStudents)
 
         totalStudents = add_student(students, studentName);
 
-        printf("Please enter how many subjects you would like to register for '%s'\n", studentName);
-        numOfSubjects = getPositiveInt();
-
-        for (int i = 0; i < numOfSubjects; i++)
-        {
-            char *subjectName = (char *)malloc(sizeof(char) * 20);
-            float grade = 0.0;
-
-            printf("Please enter the subject name (%d out of %d subjects): ", (i + 1), numOfSubjects);
-            char *name = getLimitedLine(20);
-            strcpy(subjectName, name);
-
-            int response = getYesNoResponse("Would you like to enter a grade? (Y/N): \n");
-
-            if (response > 0)
-            {
-                printf("\nPlease enter the grade for student %s (studying %s) \n", studentName, subjectName);
-                grade = getFloat();
-            }
-            else
-            {
-                // printf("You have entered %s. No grade to be entered. \n", grade_option);
-            }
-
-            add_subject(students, studentName, subjectName, grade);
-        }
+        user_add_subject(students, studentName);
     }
 
     return totalStudents;
@@ -312,11 +323,10 @@ int option_1(Student **students, int totalStudents)
 
 void option_2(Student **students, int numOfStudents)
 {
-    int numOfSubjects;
-
     char *studentName = (char *)malloc(sizeof(char) * 20);
     printf("Please enter an existing student to add a subject and/or grade \n");
-    scanf("%s", studentName);
+    char *name = getLimitedLine(20);
+    strcpy(studentName, name);
 
     if (!exists(students, studentName, numOfStudents))
     {
@@ -326,35 +336,7 @@ void option_2(Student **students, int numOfStudents)
 
     printf("Student %s has been found! \n", studentName);
 
-    printf("Please enter how many subjects you would like to add for student '%s' \n", studentName);
-    scanf("%d", &numOfSubjects);
-    for (int i = 0; i < numOfSubjects; i++)
-    {
-        char *subjectName = (char *)malloc(sizeof(char) * 20);
-        char *grade_option = (char *)malloc(sizeof(char) * 20);
-
-        float grade = 0.0;
-
-        printf("Please enter the subject name: ");
-        scanf("%s", subjectName);
-
-        printf("Would you like to enter a grade? (Y/N): ");
-        scanf("%s", grade_option);
-
-        if (strcasecmp(grade_option, "Y") == 0)
-        {
-            printf("Please enter the grade for student %s (studying %s) \n", studentName, subjectName);
-            scanf("%f", &grade);
-        }
-        else
-        {
-            // printf("You have entered %s. No grade to be entered. \n", grade_option);
-        }
-
-        add_subject(students, studentName, subjectName, grade);
-    }
-
-    printf("Successfully added all %d subjects for student '%s' \n", numOfSubjects, studentName);
+    user_add_subject(students, studentName);
 }
 
 int option_3(Teacher **teachers, int totalTeachers)
