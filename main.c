@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include "header.h"
 
 typedef struct
 {
@@ -277,8 +278,7 @@ int option_1(Student **students, int totalStudents)
         totalStudents = add_student(students, studentName);
 
         printf("Please enter how many subjects you would like to register for '%s'\n", studentName);
-        fgets(subjects_buf, 4, stdin);
-        numOfSubjects = atoi(subjects_buf);
+        numOfSubjects = getPositiveInt();
 
         for (int i = 0; i < numOfSubjects; i++)
         {
