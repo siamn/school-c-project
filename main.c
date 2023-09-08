@@ -238,6 +238,8 @@ void main_menu()
     printf("------------------------------------ \n");
 }
 
+// void user_add_subject(Student **students, char *studentName);
+
 int option_1(Student **students, int totalStudents)
 {
     long numOfStudents = -1;
@@ -259,11 +261,10 @@ int option_1(Student **students, int totalStudents)
 
     for (int i = 0; i < numOfStudents; i++)
     {
-        char studentName[20];
-        char *namePtr = studentName;
+        char *studentName = (char *)malloc(sizeof(char) * 20);
         printf("Please enter each student name, pressing the Enter key for each: \n");
         char *name = getLimitedLine(20);
-        strcpy(namePtr, name);
+        strcpy(studentName, name);
         // fgets(studentName, 20, stdin);
 
         // printf("Entered studentName: %s \n", studentName);
@@ -283,13 +284,12 @@ int option_1(Student **students, int totalStudents)
 
         for (int i = 0; i < numOfSubjects; i++)
         {
-            char subjectName[20];
-            char *subjectPtr = subjectName;
+            char *subjectName = (char *)malloc(sizeof(char) * 20);
             float grade = 0.0;
 
             printf("Please enter the subject name (%d out of %d subjects): ", (i + 1), numOfSubjects);
             char *name = getLimitedLine(20);
-            strcpy(subjectPtr, name);
+            strcpy(subjectName, name);
 
             int response = getYesNoResponse("Would you like to enter a grade? (Y/N): \n");
 
