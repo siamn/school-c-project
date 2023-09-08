@@ -5,6 +5,12 @@
 #include <stdbool.h>
 #include "header.h"
 
+/*
+    Continuation of James Tam's School C Project by Siam Islam
+*/
+
+const int QUIT = 0;
+
 typedef struct
 {
     char *subj_name;
@@ -234,40 +240,35 @@ void main_menu()
 
 int option_1(Student **students, int totalStudents)
 {
-    long numOfStudents;
+    long numOfStudents = -1;
     int numOfSubjects;
 
     char students_buf[10] = {0};
     char subjects_buf[4] = {0};
 
-    char *ptr = {""};
-
-    while (ptr[0] != '\n')
+    int response;
+    while (numOfStudents < 0)
     {
         printf("Please enter how many students you would like to register: \n");
-        fgets(students_buf, 10, stdin);
-
-        numOfStudents = strtol(students_buf, &ptr, 10);
-        printf("Number part is %ld \n", numOfStudents);
-        printf("String part is '%s' \n", ptr);
-        // // printf("String part is '%s' \n", ptr);
-
-        if (!isdigit(ptr[0]) && ptr[0] != '\n')
+        numOfStudents = getPositiveInt();
+        if (numOfStudents == -1)
         {
-            printf("\n%s is not a valid number! Please enter a valid number. \n", students_buf);
+            printf("Encountered an error. Try again.\n");
         }
     }
 
     for (int i = 0; i < numOfStudents; i++)
     {
         char studentName[20];
-
+        char *namePtr = studentName;
         printf("Please enter each student name, pressing the Enter key for each: \n");
-        fgets(studentName, 20, stdin);
+        char *name = getLimitedLine(20);
+        strcpy(namePtr, name);
+        // fgets(studentName, 20, stdin);
 
-        printf("Entered studentName: %s \n", studentName);
+        // printf("Entered studentName: %s \n", studentName);
 
-        studentName[strcspn(studentName, "\n")] = 0;
+        // studentName[strcspn(studentName, "\n")] = 0; // removing the new line here
 
         if (exists(students, studentName, totalStudents))
         {
@@ -283,19 +284,19 @@ int option_1(Student **students, int totalStudents)
         for (int i = 0; i < numOfSubjects; i++)
         {
             char subjectName[20];
-            char grade_option[20];
+            char *subjectPtr = subjectName;
             float grade = 0.0;
 
             printf("Please enter the subject name (%d out of %d subjects): ", (i + 1), numOfSubjects);
-            scanf("%s", subjectName);
+            char *name = getLimitedLine(20);
+            strcpy(subjectPtr, name);
 
-            printf(" \nWould you like to enter a grade? (Y/N): \n");
-            scanf("%s", grade_option);
+            int response = getYesNoResponse("Would you like to enter a grade? (Y/N): \n");
 
-            if (strcasecmp(grade_option, "Y") == 0)
+            if (response > 0)
             {
                 printf("\nPlease enter the grade for student %s (studying %s) \n", studentName, subjectName);
-                scanf("%f", &grade);
+                grade = getFloat();
             }
             else
             {
@@ -331,7 +332,7 @@ void option_2(Student **students, int numOfStudents)
     {
         char *subjectName = (char *)malloc(sizeof(char) * 20);
         char *grade_option = (char *)malloc(sizeof(char) * 20);
-        ;
+
         float grade = 0.0;
 
         printf("Please enter the subject name: ");
@@ -393,64 +394,55 @@ int main(void)
 
     int option;
 
-    while (1)
+    while (option != QUIT)
     {
         main_menu();
 
-        int option;
-        char buffer[4] = {0};
-        fgets(buffer, 20, stdin);
+        option = getPositiveInt();
 
-        if (!isdigit(buffer[0]))
+        if (option < 0)
         {
-            printf("Your provided input is not a valid option! Please enter your option again");
+            printf("Your provided input is not valid. Please try again.");
+            continue;
         }
-        else
+
+        switch (option)
         {
-            option = atoi(buffer);
-            if (option > 9)
-            {
-                printf("Please enter a valid number from 0 - 9!");
-            }
-            else
-            {
-                if (option == 1)
-                {
-                    totalStudents = option_1(students, totalStudents);
-                }
-                else if (option == 2)
-                {
-                    option_2(students, totalStudents);
-                }
-                else if (option == 3)
-                {
-                    totalTeachers = option_3(teachers, totalTeachers);
-                }
-                else if (option == 4)
-                {
-                }
-                else if (option == 5)
-                {
-                    printf("Total number of students: %d \n", totalStudents);
-                    print_students(students, totalStudents);
-                }
-                else if (option == 6)
-                {
-                    print_teachers(teachers, totalTeachers);
-                }
-                else if (option == 7)
-                {
-                }
-                else if (option == 0)
-                {
-                    break;
-                }
-            }
+        case 1:
+            totalStudents = option_1(students, totalStudents);
+            ;
+            break;
+        case 2:
+            option_2(students, totalStudents);
+            break;
+        case 3:
+            totalTeachers = option_3(teachers, totalTeachers);
+            break;
+        case 4:
+            printf("Not implemented. Sorry.\n");
+            break;
+        case 5:
+            printf("Total number of students: %d \n", totalStudents);
+            print_students(students, totalStudents);
+            break;
+        case 6:
+            print_teachers(teachers, totalTeachers);
+            break;
+        case 7:
+            printf("Not implemented. Sorry.\n");
+            break;
+        case 8:
+            printf("Not implemented. Sorry.\n");
+            break;
+        default:
+            printf("Please enter a valid number from 0 - 9!");
+            break;
         }
     }
 
-    // add_subject(students, "James", "Chemistry", 95.0);
-    // free(students);
-    // free(studentNames);
     return 0;
 }
+
+// add_subject(students, "James", "Chemistry", 95.0);
+// free(students);
+// free(studentNames);

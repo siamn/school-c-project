@@ -28,6 +28,23 @@ char *getLine()
     return line;
 }
 
+char *getLimitedLine(int limit)
+{
+    char *line = NULL;
+    int length = 0;
+    while (length <= 0 || length >= limit || line == NULL)
+    {
+        line = getLine();
+        length = strlen(line);
+        if (length >= limit)
+        {
+            free(line);
+            printf("The input was too long. Please try again:\n");
+        }
+    }
+    return line;
+}
+
 // function should handle freeing memory itself (as only 1, 0 or -1 is returned (-1 for error))
 int getYesNoResponse(char *msg)
 {
@@ -37,7 +54,7 @@ int getYesNoResponse(char *msg)
     {
         printf("%s", msg);
         printf("Please type 'yes'/'y'  or 'no'/'n' below:\n");
-        input = getUserInput();
+        input = getLine();
         printf("%lu\n", strlen(input));
         printf("%lu\n", strlen("y"));
         if (strcmp(input, "yes") == 0 || strcmp(input, "y") == 0)
@@ -62,7 +79,7 @@ int getYesNoResponse(char *msg)
 // function should handle freeing memory itself as a parsed integer is returned rather than the string.
 int getPositiveInt()
 {
-    char *line = getUserInput();
+    char *line = getLine();
     int choice;
     char *end;
 
@@ -85,4 +102,30 @@ int getPositiveInt()
     }
     free(line); // have to free line as no longer being used after this function exits.
     return choice;
+}
+
+float getFloat()
+{
+    char *line = getLine();
+    char *end;
+    float num;
+    num = strtof(line, &end);
+    if (end == line || num < 0)
+    {
+        if (num == 0)
+        {
+            if (errno == ERANGE)
+            {
+                printf("Input out of range\n");
+            }
+            if (errno == EINVAL)
+            {
+                printf("Could not parse input.\n");
+            }
+        }
+        printf("Please try again with a valid number.\n");
+        return -1;
+    }
+    free(line); // have to free line as no longer being used after this function exits.
+    return num;
 }
