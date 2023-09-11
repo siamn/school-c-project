@@ -124,6 +124,18 @@ int exists_subject(Student *student, char *subject)
     return -1;
 }
 
+int exists_teacher(Teacher **teachers, int numOfTeachers, char *teacher)
+{
+    for (int i = 0; i < numOfTeachers; i++)
+    {
+        if (strcmp(teachers[i]->teacher_name, teacher) == 0)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
 int exists_teacher_for_subject(Teacher **teachers, int numOfTeachers, char *subject)
 {
     for (int i = 0; i < numOfTeachers; i++)
@@ -265,6 +277,7 @@ void main_menu()
     printf("6). List the teacher teaching a particular subject \n");
     printf("7). List the grades a particular student has achieved in a subject \n");
     printf("8). List the teachers teaching a particular student \n");
+    printf("9). List the students taught by a particular teacher \n");
     printf("0). EXIT \n");
     printf("------------------------------------ \n");
 }
@@ -499,6 +512,38 @@ void option_8(Student **students, int numOfStudents, Teacher **teachers, int num
     }
 }
 
+void option_9(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers)
+{
+    printf("Please enter the name of the teacher you want to find students for: \n");
+    char *name = getLimitedLine(20);
+    int teacherIndex = exists_teacher(teachers, numOfTeachers, name);
+    int count = 0;
+    if (teacherIndex >= 0)
+    {
+        Teacher *teacher = teachers[teacherIndex];
+        printf("Students taught by teacher %s:\n", teacher->teacher_name);
+        char *subject = teacher->subject.subj_name;
+        for (int i = 0; i < numOfStudents; i++)
+        {
+            Student *student = students[i];
+            int studentIndex = exists_subject(student, subject);
+            if (studentIndex >= 0)
+            {
+                printf("%s\n", student->stud_name);
+                count++;
+            }
+        }
+        if (count < 1)
+        {
+            printf("No students found.\n");
+        }
+    }
+    else
+    {
+        printf("Could not find this teacher %s in our database.\n", name);
+    }
+}
+
 int main(void)
 {
     int numOfStudents;
@@ -555,6 +600,9 @@ int main(void)
             break;
         case 8:
             option_8(students, totalStudents, teachers, totalTeachers);
+            break;
+        case 9:
+            option_9(students, totalStudents, teachers, totalTeachers);
             break;
         case 0:
             printf("Exiting program.\n");
