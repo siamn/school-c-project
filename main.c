@@ -124,6 +124,19 @@ int exists_subject(Student *student, char *subject)
     return -1;
 }
 
+int exists_teacher_for_subject(Teacher **teachers, int numOfTeachers, char *subject)
+{
+    for (int i = 0; i < numOfTeachers; i++)
+    {
+        Teacher *teacher = teachers[i];
+        if (strcmp(subject, teacher->subject.subj_name) == 0)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
 int add_student(Student **students, char *studentName)
 {
     static int index = 0;
@@ -251,6 +264,7 @@ void main_menu()
     printf("5). List students studying a particular subject \n");
     printf("6). List the teacher teaching a particular subject \n");
     printf("7). List the grades a particular student has achieved in a subject \n");
+    printf("8). List the teachers teaching a particular student \n");
     printf("0). EXIT \n");
     printf("------------------------------------ \n");
 }
@@ -456,6 +470,35 @@ void option_7(Student **students, int numOfStudents)
     }
 }
 
+void option_8(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers)
+{
+    printf("Please enter the name of the student you want to find teachers for: \n");
+    char *name = getLimitedLine(20);
+    int studentIndex = exists(students, name, numOfStudents);
+    if (studentIndex >= 0)
+    {
+        Student *student = students[studentIndex];
+        printf("Teachers teaching %s:\n", student->stud_name);
+        for (int i = 0; i < student->subject_count; i++)
+        {
+            int teacherIndex = exists_teacher_for_subject(teachers, numOfTeachers, student->subjects[i].subj_name);
+            if (teacherIndex >= 0)
+            {
+                Teacher *teacher = teachers[teacherIndex];
+                printf("%s teaches %s\n", teacher->teacher_name, student->subjects[i].subj_name);
+            }
+            else
+            {
+                printf("No teacher found for subject %s\n", student->subjects[i].subj_name);
+            }
+        }
+    }
+    else
+    {
+        printf("Could not find this student %s in our database.\n", name);
+    }
+}
+
 int main(void)
 {
     int numOfStudents;
@@ -511,7 +554,7 @@ int main(void)
             option_7(students, totalStudents);
             break;
         case 8:
-            printf("Not implemented. Sorry.\n");
+            option_8(students, totalStudents, teachers, totalTeachers);
             break;
         case 0:
             printf("Exiting program.\n");
