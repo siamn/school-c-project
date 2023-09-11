@@ -33,6 +33,11 @@ typedef struct
 // check if you can still access unallocated memory when adding students
 // e.g. if num students set to 1, can still add more students and print them out.
 
+/* TODO: Can currently add duplicate subjects
+e.g. add student with subject Math with no grade using option 1
+then use option 2 to add grade for same subject by typing Math for same student
+another math subject is added rather than replacing the existing math subject */
+
 Student **allocate_structs_stud(void)
 {
     printf("Allocating memory for struct array. \n");
@@ -101,10 +106,10 @@ int exists(Student **students, char *studentName, int numOfStudents)
     {
         if (strcmp(students[i]->stud_name, studentName) == 0)
         {
-            return 1;
+            return i;
         }
     }
-    return 0;
+    return -1;
 }
 
 int exists_subject(Student *student, char *subject)
@@ -113,10 +118,10 @@ int exists_subject(Student *student, char *subject)
     {
         if (strcmp(subject, student->subjects[i].subj_name) == 0)
         {
-            return 1;
+            return i;
         }
     }
-    return 0;
+    return -1;
 }
 
 int add_student(Student **students, char *studentName)
@@ -319,7 +324,7 @@ int option_1(Student **students, int totalStudents)
 
         // studentName[strcspn(studentName, "\n")] = 0; // removing the new line here
 
-        if (exists(students, studentName, totalStudents))
+        if (exists(students, studentName, totalStudents) >= 0)
         {
             printf("\nThe student '%s' exists in the system already!  Exiting back to main menu ... \n", studentName);
             return totalStudents;
@@ -340,7 +345,7 @@ void option_2(Student **students, int numOfStudents)
     char *name = getLimitedLine(20);
     strcpy(studentName, name);
 
-    if (!exists(students, studentName, numOfStudents))
+    if (exists(students, studentName, numOfStudents) == -1)
     {
         printf("The student '%s' does not exist in the system. Exiting back to main menu ... \n", studentName);
         return;
@@ -389,7 +394,7 @@ void option_5(Student **students, int numOfStudents)
     for (int i = 0; i < numOfStudents; i++)
     {
         Student *student = students[i];
-        if (exists_subject(student, subject))
+        if (exists_subject(student, subject) >= 0)
         {
             printf("%s\n", student->stud_name);
             studentsStudyingSubject += 1;
@@ -420,6 +425,34 @@ void option_6(Teacher **teachers, int numOfTeachers)
     if (count < 1)
     {
         printf("No teacher is currently teacher this subject.\n");
+    }
+}
+
+void option_7(Student **students, int numOfStudents)
+{
+    printf("Please enter the name of the student you want to find grades for: \n");
+    char *name = getLimitedLine(20);
+    printf("Please enter the name of the subject you want to find the student's grades for: \n");
+    char *subject = getLimitedLine(20);
+    int studentIndex = exists(students, name, numOfStudents);
+    if (studentIndex >= 0)
+    {
+        Student *student = students[studentIndex];
+        int subjectIndex = exists_subject(student, subject);
+        if (subjectIndex >= 0)
+        {
+            printf("%s's grade for subject %s: %0.2f\n", student->stud_name,
+                   student->subjects[subjectIndex].subj_name,
+                   student->subjects[subjectIndex].grade);
+        }
+        else
+        {
+            printf("Could not find subject %s for this student.\n", subject);
+        }
+    }
+    else
+    {
+        printf("Could not find this student %s in our database.\n", name);
     }
 }
 
@@ -475,10 +508,13 @@ int main(void)
             option_6(teachers, totalTeachers);
             break;
         case 7:
-            printf("Not implemented. Sorry.\n");
+            option_7(students, totalStudents);
             break;
         case 8:
             printf("Not implemented. Sorry.\n");
+            break;
+        case 0:
+            printf("Exiting program.\n");
             break;
         default:
             printf("Please enter a valid number from 0 - 9!");
