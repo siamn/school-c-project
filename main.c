@@ -107,6 +107,18 @@ int exists(Student **students, char *studentName, int numOfStudents)
     return 0;
 }
 
+int exists_subject(Student *student, char *subject)
+{
+    for (int i = 0; i < student->subject_count; i++)
+    {
+        if (strcmp(subject, student->subjects[i].subj_name) == 0)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int add_student(Student **students, char *studentName)
 {
     static int index = 0;
@@ -363,6 +375,32 @@ int option_3(Teacher **teachers, int totalTeachers)
     return totalTeachers;
 }
 
+void option_5(Student **students, int numOfStudents)
+{
+    printf("Please enter the name of the subject you want to find a list of students for: \n");
+    char *subject = getLimitedLine(20);
+    if (numOfStudents == 0)
+    {
+        printf("No students registered.");
+        return;
+    }
+    printf("Students studying %s:\n", subject);
+    int studentsStudyingSubject = 0;
+    for (int i = 0; i < numOfStudents; i++)
+    {
+        Student *student = students[i];
+        if (exists_subject(student, subject))
+        {
+            printf("%s\n", student->stud_name);
+            studentsStudyingSubject += 1;
+        }
+    }
+    if (studentsStudyingSubject < 1)
+    {
+        printf("No registered student is currently studying this subject.\n");
+    }
+}
+
 int main(void)
 {
     int numOfStudents;
@@ -406,6 +444,8 @@ int main(void)
         case 5:
             printf("Total number of students: %d \n", totalStudents);
             print_students(students, totalStudents);
+            printf("Actual: \n\n");
+            option_5(students, totalStudents);
             break;
         case 6:
             print_teachers(teachers, totalTeachers);
