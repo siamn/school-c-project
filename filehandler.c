@@ -6,6 +6,53 @@
 int saveStudent(FILE *file, Student *student);
 int saveTeacher(FILE *file, Teacher *teacher);
 
+// TODO: read teachers is fixed if I add back in a printf. There is likely something wrong with the memory allocation of
+//  teachers and students arrays
+
+// Returns total number of teachers added after reading from file.
+int readTeachers(Teacher **teachers)
+{
+    // printf("here in read\n");
+    const int teacherFields = 2;
+    int numOfTeachers = 0;
+    FILE *file = fopen("teachers.csv", "r");
+    // printf("here in read2\n");
+    if (file == NULL)
+    {
+        perror("Unable to open teachers file.\n");
+        return numOfTeachers;
+    }
+    // printf("here in read3\n");
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t linelen;
+    // printf("here in read4\n");
+    while ((linelen = getline(&line, &len, file)) > 0)
+    {
+        // printf("Linelen: %zd\n", linelen);
+        // printf("'%s'\n", line);
+        //("Loop\n");
+        char *teacherName;
+        char *subjectName;
+        int parsedFields = sscanf(line, "\"%19[^\"]\",\"%19[^\"]\"", teacherName, subjectName);
+        // printf("Loop 2\n");
+        if (parsedFields == teacherFields)
+        {
+            numOfTeachers = add_teacher(teachers, teacherName, subjectName);
+        }
+        else
+        {
+            perror("Failed to parse line successfully");
+            return -1;
+        }
+    }
+
+    free(line);
+    fclose(file);
+
+    return numOfTeachers;
+}
+
 int save(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers)
 {
     FILE *studentsFile = fopen("students.csv", "w"); // open file in write mode (creates new file if it doesn't already exist)

@@ -25,7 +25,7 @@ Student **allocate_structs_stud(void)
 
     const int NUM_OF_STUDENTS = 100;
 
-    Student **students = (Student **)malloc(sizeof(*students) * NUM_OF_STUDENTS);
+    Student **students = (Student **)malloc(sizeof(Student *) * NUM_OF_STUDENTS);
 
     if (students == NULL)
     {
@@ -35,15 +35,15 @@ Student **allocate_structs_stud(void)
 
     for (int i = 0; i < NUM_OF_STUDENTS; i++)
     {
-        *(students + i) = (Student *)malloc(sizeof(Student));
-        (*(students + i))->subjects = (Subject *)malloc(sizeof(Subject) * 10); // allocate space using malloc() for student subjects;
+        students[i] = (Student *)malloc(sizeof(Student));
+        students[i]->subjects = (Subject *)malloc(sizeof(Subject) * 10); // allocate space using malloc() for student subjects;
 
-        if (*(students + i) == NULL)
+        if (students[i] == NULL)
         {
             perror("Error allocating memory for single struct");
             exit(EXIT_FAILURE);
         }
-        if ((*(students + i))->subjects == NULL)
+        if (students[i]->subjects == NULL)
         {
             perror("Error allocating memory for subject pointer");
             exit(EXIT_FAILURE);
@@ -59,7 +59,7 @@ Teacher **allocate_structs_teach(void)
 
     const int NUM_OF_TEACHERS = 20;
 
-    Teacher **teachers = (Teacher **)malloc(sizeof(*teachers) * NUM_OF_TEACHERS);
+    Teacher **teachers = (Teacher **)malloc(sizeof(Teacher *) * NUM_OF_TEACHERS);
 
     if (teachers == NULL)
     {
@@ -69,9 +69,9 @@ Teacher **allocate_structs_teach(void)
 
     for (int i = 0; i < NUM_OF_TEACHERS; i++)
     {
-        *(teachers + i) = (Teacher *)malloc(sizeof(Teacher));
+        teachers[i] = (Teacher *)malloc(sizeof(Teacher));
 
-        if (*(teachers + i) == NULL)
+        if (teachers[i] == NULL)
         {
             perror("Error allocating memory for single struct");
             exit(EXIT_FAILURE);
@@ -537,6 +537,8 @@ int main(void)
     int totalTeachers = 0;
 
     int option;
+
+    readTeachers(teachers);
 
     while (option != QUIT)
     {
