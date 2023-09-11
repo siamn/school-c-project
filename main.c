@@ -538,7 +538,7 @@ int main(void)
 
     int option;
 
-    readTeachers(teachers);
+    totalTeachers = readTeachers(teachers);
 
     while (option != QUIT)
     {
