@@ -11,25 +11,6 @@
 
 const int QUIT = 0;
 
-typedef struct
-{
-    char *subj_name;
-    float grade;
-} Subject;
-
-typedef struct
-{
-    char teacher_name[50];
-    Subject subject;
-} Teacher;
-
-typedef struct
-{
-    char stud_name[50];
-    int subject_count;
-    Subject *subjects;
-} Student;
-
 // check if you can still access unallocated memory when adding students
 // e.g. if num students set to 1, can still add more students and print them out.
 
@@ -605,6 +586,11 @@ int main(void)
             option_9(students, totalStudents, teachers, totalTeachers);
             break;
         case 0:
+            printf("Attempting save...\n");
+            if (save(students, totalStudents, teachers, totalTeachers) == 1)
+            {
+                printf("Saved successfully.\n");
+            }
             printf("Exiting program.\n");
             break;
         default:
