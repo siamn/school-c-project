@@ -356,7 +356,7 @@ int option_3(Teacher **teachers, int totalTeachers)
     int numOfTeachers;
 
     printf("Please enter how many teachers you would like to add \n");
-    scanf("%d", &numOfTeachers);
+    numOfTeachers = getPositiveInt();
 
     for (int i = 0; i < numOfTeachers; i++)
     {
@@ -364,10 +364,10 @@ int option_3(Teacher **teachers, int totalTeachers)
         char *subjectName = (char *)malloc(sizeof(char) * 20);
 
         printf("Please enter the teacher name (%d out of %d teachers): \n", (i + 1), numOfTeachers);
-        scanf("%s", teacherName);
+        teacherName = getLimitedLine(20);
 
         printf("Please enter the subject name (1 subject allowed): \n");
-        scanf("%s", subjectName);
+        subjectName = getLimitedLine(20);
 
         totalTeachers = add_teacher(teachers, teacherName, subjectName);
     }
@@ -398,6 +398,28 @@ void option_5(Student **students, int numOfStudents)
     if (studentsStudyingSubject < 1)
     {
         printf("No registered student is currently studying this subject.\n");
+    }
+}
+
+void option_6(Teacher **teachers, int numOfTeachers)
+{
+    printf("Please enter the name of the subject you want to find the teacher for: \n");
+    char *subject = getLimitedLine(20);
+
+    printf("Teacher studying subject %s:\n", subject);
+    int count = 0;
+    for (int i = 0; i < numOfTeachers; i++)
+    {
+        Teacher *teacher = teachers[i];
+        if (strcmp(subject, teacher->subject.subj_name) == 0)
+        {
+            printf("%s", teacher->teacher_name);
+            count++;
+        }
+    }
+    if (count < 1)
+    {
+        printf("No teacher is currently teacher this subject.\n");
     }
 }
 
@@ -449,6 +471,8 @@ int main(void)
             break;
         case 6:
             print_teachers(teachers, totalTeachers);
+            printf("Actual: \n\n");
+            option_6(teachers, totalTeachers);
             break;
         case 7:
             printf("Not implemented. Sorry.\n");
