@@ -18,6 +18,13 @@ const int QUIT = 0;
 Student **students;
 Teacher **teachers;
 
+typedef struct
+{
+    Student **students;
+    int currentSize;
+    int maxSize;
+} StudentsList;
+
 // check if you can still access unallocated memory when adding students
 // e.g. if num students set to 1, can still add more students and print them out.
 
@@ -217,6 +224,40 @@ int addStudent(char *studentName, int numOfStudents)
     printf("\nSuccessfully added student '%s' to the school database system.  \n\n", studentName);
 
     return index;
+}
+
+int addStudent2(StudentsList *studentsList, char *studentName)
+{
+    int index = studentsList->currentSize;
+    printf("Adding student %s \n", studentName);
+    studentsList->maxSize = expandStudentsStruct(&studentsList->students, studentsList->currentSize, studentsList->maxSize);
+    Student **students = studentsList->students;
+    students[index]->name = studentName;
+
+    students[index]->subjects = (Subject *)malloc(sizeof(Subject) * DEFAULT_SUBJECTS_ARRAY_SIZE); // allocate space using malloc() for student subjects;
+    if (students[index]->subjects == NULL)
+    {
+        perror("Error allocating memory for subject pointer");
+        return -1;
+    }
+    // initialise the subjects that this particular student studies to 0
+    students[index]->subjectCount = 0;
+
+    studentsList->currentSize++;
+
+    printf("\nSuccessfully added student '%s' to the school database system.  \n\n", studentName);
+
+    return 1;
+}
+
+void displayStudents2(StudentsList *list)
+{
+    printf("Students:\n");
+    Student **students = list->students;
+    for (int i = 0; i < list->currentSize; i++)
+    {
+        printf("%s\n", students[i]->name);
+    }
 }
 
 void addSubject(char *studentName, char *subjectName, float gradeInput)
@@ -645,75 +686,94 @@ int main(void)
     teachers = allocateTeachersStructs();
 
     // load teachers from file
-    totalTeachers = readTeachers();
+    // totalTeachers = readTeachers();
     printf("Number of teachers read from file: %d\n", totalTeachers);
 
-    while (option != QUIT)
+    StudentsList *list = malloc(sizeof(StudentsList) * 1);
+    if (list == NULL)
     {
-        displayMenuOptions();
-
-        option = getPositiveInt();
-
-        if (option < 0)
-        {
-            printf("Your provided input is not valid. Please try again.");
-            continue;
-        }
-
-        switch (option)
-        {
-        case 1:
-            totalStudents = userAddNewStudents(totalStudents);
-            if (totalStudents == -1)
-            {
-                return -1;
-            }
-            break;
-        case 2:
-            userAddSubjectToExistingStudent(totalStudents);
-            break;
-        case 3:
-            totalTeachers = userAddNewTeachers(totalTeachers);
-            break;
-        case 4:
-            printf("Not implemented. Sorry.\n");
-            break;
-        case 5:
-            printf("Total number of students: %d \n", totalStudents);
-            printStudents(totalStudents);
-            printf("Actual: \n\n");
-            userFindStudentsForSubject(totalStudents);
-            break;
-        case 6:
-            printTeachers(totalTeachers);
-            printf("Actual: \n\n");
-            userFindTeacherForSubject(totalTeachers);
-            break;
-        case 7:
-            userFindGradesForStudent(totalStudents);
-            break;
-        case 8:
-            userFindTeachersForStudent(totalStudents, totalTeachers);
-            break;
-        case 9:
-            userFindStudentsForTeacher(totalStudents, totalTeachers);
-            break;
-        case 10:
-            displayStudents(totalStudents);
-            break;
-        case 0:
-            printf("Attempting save...\n");
-            if (save(students, totalStudents, teachers, totalTeachers) == 1)
-            {
-                printf("Saved successfully.\n");
-            }
-            printf("Exiting program.\n");
-            break;
-        default:
-            printf("Please enter a valid number from 0 - 10!");
-            break;
-        }
+        perror("Couldn't allocate list.");
+        return -1;
     }
+
+    list->students = students;
+    list->currentSize = 0;
+    list->maxSize = DEFAULT_STUDENTS_ARRAY_SIZE;
+
+    addStudent2(list, "Siam");
+    displayStudents2(list);
+    addStudent2(list, "Tom");
+    displayStudents2(list);
+    addStudent2(list, "Smith");
+    displayStudents2(list);
+    addStudent2(list, "Smithx");
+    displayStudents2(list);
+    // while (option != QUIT)
+    // {
+    //     displayMenuOptions();
+
+    //     option = getPositiveInt();
+
+    //     if (option < 0)
+    //     {
+    //         printf("Your provided input is not valid. Please try again.");
+    //         continue;
+    //     }
+
+    //     switch (option)
+    //     {
+    //     case 1:
+    //         totalStudents = userAddNewStudents(totalStudents);
+    //         if (totalStudents == -1)
+    //         {
+    //             return -1;
+    //         }
+    //         break;
+    //     case 2:
+    //         userAddSubjectToExistingStudent(totalStudents);
+    //         break;
+    //     case 3:
+    //         totalTeachers = userAddNewTeachers(totalTeachers);
+    //         break;
+    //     case 4:
+    //         printf("Not implemented. Sorry.\n");
+    //         break;
+    //     case 5:
+    //         printf("Total number of students: %d \n", totalStudents);
+    //         printStudents(totalStudents);
+    //         printf("Actual: \n\n");
+    //         userFindStudentsForSubject(totalStudents);
+    //         break;
+    //     case 6:
+    //         printTeachers(totalTeachers);
+    //         printf("Actual: \n\n");
+    //         userFindTeacherForSubject(totalTeachers);
+    //         break;
+    //     case 7:
+    //         userFindGradesForStudent(totalStudents);
+    //         break;
+    //     case 8:
+    //         userFindTeachersForStudent(totalStudents, totalTeachers);
+    //         break;
+    //     case 9:
+    //         userFindStudentsForTeacher(totalStudents, totalTeachers);
+    //         break;
+    //     case 10:
+    //         displayStudents(totalStudents);
+    //         break;
+    //     case 0:
+    //         printf("Attempting save...\n");
+    //         if (save(students, totalStudents, teachers, totalTeachers) == 1)
+    //         {
+    //             printf("Saved successfully.\n");
+    //         }
+    //         printf("Exiting program.\n");
+    //         break;
+    //     default:
+    //         printf("Please enter a valid number from 0 - 10!");
+    //         break;
+    //     }
+    // }
 
     // TODO: FREE MEMORY HERE
 
