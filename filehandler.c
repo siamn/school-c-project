@@ -10,7 +10,7 @@ int saveTeacher(FILE *file, Teacher *teacher);
 //  teachers and students arrays
 
 // Returns total number of teachers added after reading from file.
-int readTeachers(Teacher **teachers)
+int readTeachers()
 {
     // printf("here in read\n");
     const int teacherFields = 2;
@@ -38,7 +38,7 @@ int readTeachers(Teacher **teachers)
         // printf("Loop 2\n");
         if (parsedFields == teacherFields)
         {
-            numOfTeachers = addTeacher(teachers, teacherName, subjectName, numOfTeachers);
+            numOfTeachers = addTeacher(teacherName, subjectName, numOfTeachers);
         }
         else
         {

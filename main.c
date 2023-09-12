@@ -15,7 +15,8 @@
 
 const int QUIT = 0;
 
-Student **students = NULL;
+Student **students;
+Teacher **teachers;
 
 // check if you can still access unallocated memory when adding students
 // e.g. if num students set to 1, can still add more students and print them out.
@@ -104,7 +105,7 @@ int subjectExistsForStudent(Student *student, char *subject)
     return -1;
 }
 
-int teacherExists(Teacher **teachers, int numOfTeachers, char *teacher)
+int teacherExists(int numOfTeachers, char *teacher)
 {
     for (int i = 0; i < numOfTeachers; i++)
     {
@@ -116,7 +117,7 @@ int teacherExists(Teacher **teachers, int numOfTeachers, char *teacher)
     return -1;
 }
 
-int teacherExistsForSubject(Teacher **teachers, int numOfTeachers, char *subject)
+int teacherExistsForSubject(int numOfTeachers, char *subject)
 {
     for (int i = 0; i < numOfTeachers; i++)
     {
@@ -209,7 +210,7 @@ void addSubject(char *studentName, char *subjectName, float gradeInput)
     printf("\nSuccessfully added subject %s with grade %0.2f for student '%s' to the school database system 😄  \n\n", subjectName, gradeInput, studentName);
 }
 
-int addTeacher(Teacher **teachers, char *teacherName, char *subjectName, int numOfTeachers)
+int addTeacher(char *teacherName, char *subjectName, int numOfTeachers)
 {
     int index = numOfTeachers;
     printf("Adding teacher %s \n", teacherName);
@@ -251,7 +252,7 @@ void printStudents(int numOfStudents)
     }
 }
 
-void printTeachers(Teacher **teachers, int numOfTeachers)
+void printTeachers(int numOfTeachers)
 {
     if (numOfTeachers == 0)
     {
@@ -385,7 +386,7 @@ void userAddSubjectToExistingStudent(int numOfStudents)
     userAddSubject(studentName);
 }
 
-int userAddNewTeachers(Teacher **teachers, int totalTeachers)
+int userAddNewTeachers(int totalTeachers)
 {
     int numOfTeachers;
 
@@ -403,18 +404,18 @@ int userAddNewTeachers(Teacher **teachers, int totalTeachers)
         printf("Please enter the subject name (1 subject allowed): \n");
         subjectName = getLimitedLine(20);
 
-        if (teacherExists(teachers, totalTeachers, teacherName) >= 0)
+        if (teacherExists(totalTeachers, teacherName) >= 0)
         {
             printf("\nThe teacher '%s' exists in the system already!  Exiting back to main menu ... \n", teacherName);
             return totalTeachers;
         }
-        else if (teacherExistsForSubject(teachers, totalTeachers, subjectName) >= 0)
+        else if (teacherExistsForSubject(totalTeachers, subjectName) >= 0)
         {
             printf("\nA teacher already exists in the system for the subject '%s'.\nExiting back to main menu ... \n", subjectName);
             return totalTeachers;
         }
 
-        totalTeachers = addTeacher(teachers, teacherName, subjectName, totalTeachers);
+        totalTeachers = addTeacher(teacherName, subjectName, totalTeachers);
     }
 
     return totalTeachers;
@@ -446,7 +447,7 @@ void userFindStudentsForSubject(int numOfStudents)
     }
 }
 
-void userFindTeacherForSubject(Teacher **teachers, int numOfTeachers)
+void userFindTeacherForSubject(int numOfTeachers)
 {
     printf("Please enter the name of the subject you want to find the teacher for: \n");
     char *subject = getLimitedLine(20);
@@ -496,7 +497,7 @@ void userFindGradesForStudent(int numOfStudents)
     }
 }
 
-void userFindTeachersForStudent(int numOfStudents, Teacher **teachers, int numOfTeachers)
+void userFindTeachersForStudent(int numOfStudents, int numOfTeachers)
 {
     printf("Please enter the name of the student you want to find teachers for: \n");
     char *name = getLimitedLine(20);
@@ -507,7 +508,7 @@ void userFindTeachersForStudent(int numOfStudents, Teacher **teachers, int numOf
         printf("Teachers teaching %s:\n", student->name);
         for (int i = 0; i < student->subjectCount; i++)
         {
-            int teacherIndex = teacherExistsForSubject(teachers, numOfTeachers, student->subjects[i].name);
+            int teacherIndex = teacherExistsForSubject(numOfTeachers, student->subjects[i].name);
             if (teacherIndex >= 0)
             {
                 Teacher *teacher = teachers[teacherIndex];
@@ -563,11 +564,11 @@ void displayStudents(int numOfStudents)
     }
 }
 
-void userFindStudentsForTeacher(int numOfStudents, Teacher **teachers, int numOfTeachers)
+void userFindStudentsForTeacher(int numOfStudents, int numOfTeachers)
 {
     printf("Please enter the name of the teacher you want to find students for: \n");
     char *name = getLimitedLine(20);
-    int teacherIndex = teacherExists(teachers, numOfTeachers, name);
+    int teacherIndex = teacherExists(numOfTeachers, name);
     int count = 0;
     if (teacherIndex >= 0)
     {
@@ -597,19 +598,20 @@ void userFindStudentsForTeacher(int numOfStudents, Teacher **teachers, int numOf
 
 int main(void)
 {
-    int numOfStudents;
-    int numOfSubjects;
-
-    students = allocateStudentsStructs();
-    Teacher **teachers = allocateTeachersStructs();
-
+    // initialize requried variables
     int totalStudents = 0;
     int totalTeachers = 0;
     int maxStudentsArraySize = DEFAULT_STUDENTS_ARRAY_SIZE;
-    int option;
+    int option = -1;
 
-    totalTeachers = readTeachers(teachers);
-    printf("total_teachers: %d\n", totalTeachers);
+    // allocate initial arrays of pointers to student/teachers structs
+    students = allocateStudentsStructs();
+    teachers = allocateTeachersStructs();
+
+    // load teachers from file
+    totalTeachers = readTeachers();
+    printf("Number of teachers read from file: %d\n", totalTeachers);
+
     while (option != QUIT)
     {
         displayMenuOptions();
@@ -635,7 +637,7 @@ int main(void)
             userAddSubjectToExistingStudent(totalStudents);
             break;
         case 3:
-            totalTeachers = userAddNewTeachers(teachers, totalTeachers);
+            totalTeachers = userAddNewTeachers(totalTeachers);
             break;
         case 4:
             printf("Not implemented. Sorry.\n");
@@ -647,18 +649,18 @@ int main(void)
             userFindStudentsForSubject(totalStudents);
             break;
         case 6:
-            printTeachers(teachers, totalTeachers);
+            printTeachers(totalTeachers);
             printf("Actual: \n\n");
-            userFindTeacherForSubject(teachers, totalTeachers);
+            userFindTeacherForSubject(totalTeachers);
             break;
         case 7:
             userFindGradesForStudent(totalStudents);
             break;
         case 8:
-            userFindTeachersForStudent(totalStudents, teachers, totalTeachers);
+            userFindTeachersForStudent(totalStudents, totalTeachers);
             break;
         case 9:
-            userFindStudentsForTeacher(totalStudents, teachers, totalTeachers);
+            userFindStudentsForTeacher(totalStudents, totalTeachers);
             break;
         case 10:
             displayStudents(totalStudents);
@@ -677,9 +679,7 @@ int main(void)
         }
     }
 
+    // TODO: FREE MEMORY HERE
+
     return 0;
 }
-
-// addSubject("James", "Chemistry", 95.0);
-// free(students);
-// free(studentNames);

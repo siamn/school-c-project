@@ -20,7 +20,10 @@ typedef struct
     Subject *subjects;
 } Student;
 
-int addTeacher(Teacher **teachers, char *teacherName, char *subjectName, int numOfTeachers);
+extern Student **students;
+extern Teacher **teachers;
+
+int addTeacher(char *teacherName, char *subjectName, int numOfTeachers);
 
 char *getLine();
 
@@ -34,4 +37,4 @@ float getFloat();
 
 int save(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers);
 
-int readTeachers(Teacher **teachers);
+int readTeachers();
