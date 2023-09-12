@@ -15,6 +15,8 @@
 
 const int QUIT = 0;
 
+Student **students = NULL;
+
 // check if you can still access unallocated memory when adding students
 // e.g. if num students set to 1, can still add more students and print them out.
 
@@ -78,7 +80,7 @@ Teacher **allocate_structs_teach(void)
     return (teachers);
 }
 
-int exists(Student **students, char *studentName, int numOfStudents)
+int exists(char *studentName, int numOfStudents)
 {
     for (int i = 0; i < numOfStudents; i++)
     {
@@ -132,8 +134,6 @@ int expandStudentsStruct(Student ***students, int currentSize, int maxSize)
     int newMaxSize = maxSize;
     if (currentSize >= 0.5 * maxSize)
     {
-        printf("here\n");
-
         newMaxSize = maxSize * 2;
         printf("Before realloc: %p\n", students);
         Student **newStudents = realloc(*students, newMaxSize * sizeof(Student *));
@@ -159,10 +159,12 @@ int expandStudentsStruct(Student ***students, int currentSize, int maxSize)
     return maxSize;
 }
 
-int add_student(Student **students, char *studentName, int numOfStudents)
+int add_student(char *studentName, int numOfStudents)
 {
+    static int maxArraySize = DEFAULT_STUDENTS_ARRAY_SIZE;
     int index = numOfStudents;
     printf("Adding student %s \n", studentName);
+    maxArraySize = expandStudentsStruct(&students, numOfStudents, maxArraySize);
 
     students[index]->stud_name = studentName;
 
@@ -182,7 +184,7 @@ int add_student(Student **students, char *studentName, int numOfStudents)
     return index;
 }
 
-void add_subject(Student **students, char *studentName, char *subjectName, float gradeInput)
+void add_subject(char *studentName, char *subjectName, float gradeInput)
 {
     printf("Inside add_subject,  student name: %s \n", studentName);
     for (int i = 0; i < sizeof(students); i++)
@@ -233,7 +235,7 @@ int add_teacher(Teacher **teachers, char *teacherName, char *subjectName, int nu
     return index;
 }
 
-void print_students(Student **students, int numOfStudents)
+void print_students(int numOfStudents)
 {
     if (numOfStudents == 0)
     {
@@ -291,7 +293,7 @@ void main_menu()
     printf("------------------------------------ \n");
 }
 
-void user_add_subject(Student **students, char *studentName)
+void user_add_subject(char *studentName)
 {
     int numOfSubjects = -1;
     while (numOfSubjects < 0)
@@ -325,12 +327,12 @@ void user_add_subject(Student **students, char *studentName)
             // printf("You have entered %s. No grade to be entered. \n", grade_option);
         }
 
-        add_subject(students, studentName, subjectName, grade);
+        add_subject(studentName, subjectName, grade);
     }
     printf("Successfully added all %d subjects for student '%s' \n", numOfSubjects, studentName);
 }
 
-int option_1(Student **students, int totalStudents)
+int option_1(int totalStudents)
 {
     long numOfStudents = -1;
 
@@ -360,28 +362,28 @@ int option_1(Student **students, int totalStudents)
 
         // studentName[strcspn(studentName, "\n")] = 0; // removing the new line here
 
-        if (exists(students, studentName, totalStudents) >= 0)
+        if (exists(studentName, totalStudents) >= 0)
         {
             printf("\nThe student '%s' exists in the system already!  Exiting back to main menu ... \n", studentName);
             return totalStudents;
         }
 
-        totalStudents = add_student(students, studentName, totalStudents);
+        totalStudents = add_student(studentName, totalStudents);
 
-        user_add_subject(students, studentName);
+        user_add_subject(studentName);
     }
 
     return totalStudents;
 }
 
-void option_2(Student **students, int numOfStudents)
+void option_2(int numOfStudents)
 {
     char *studentName = (char *)malloc(sizeof(char) * 20);
     printf("Please enter an existing student to add a subject and/or grade \n");
     char *name = getLimitedLine(20);
     strcpy(studentName, name);
 
-    if (exists(students, studentName, numOfStudents) == -1)
+    if (exists(studentName, numOfStudents) == -1)
     {
         printf("The student '%s' does not exist in the system. Exiting back to main menu ... \n", studentName);
         return;
@@ -389,7 +391,7 @@ void option_2(Student **students, int numOfStudents)
 
     printf("Student %s has been found! \n", studentName);
 
-    user_add_subject(students, studentName);
+    user_add_subject(studentName);
 }
 
 int option_3(Teacher **teachers, int totalTeachers)
@@ -427,7 +429,7 @@ int option_3(Teacher **teachers, int totalTeachers)
     return totalTeachers;
 }
 
-void option_5(Student **students, int numOfStudents)
+void option_5(int numOfStudents)
 {
     printf("Please enter the name of the subject you want to find a list of students for: \n");
     char *subject = getLimitedLine(20);
@@ -475,13 +477,13 @@ void option_6(Teacher **teachers, int numOfTeachers)
     }
 }
 
-void option_7(Student **students, int numOfStudents)
+void option_7(int numOfStudents)
 {
     printf("Please enter the name of the student you want to find grades for: \n");
     char *name = getLimitedLine(20);
     printf("Please enter the name of the subject you want to find the student's grades for: \n");
     char *subject = getLimitedLine(20);
-    int studentIndex = exists(students, name, numOfStudents);
+    int studentIndex = exists(name, numOfStudents);
     if (studentIndex >= 0)
     {
         Student *student = students[studentIndex];
@@ -503,11 +505,11 @@ void option_7(Student **students, int numOfStudents)
     }
 }
 
-void option_8(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers)
+void option_8(int numOfStudents, Teacher **teachers, int numOfTeachers)
 {
     printf("Please enter the name of the student you want to find teachers for: \n");
     char *name = getLimitedLine(20);
-    int studentIndex = exists(students, name, numOfStudents);
+    int studentIndex = exists(name, numOfStudents);
     if (studentIndex >= 0)
     {
         Student *student = students[studentIndex];
@@ -532,7 +534,7 @@ void option_8(Student **students, int numOfStudents, Teacher **teachers, int num
     }
 }
 
-void option_9(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers)
+void option_9(int numOfStudents, Teacher **teachers, int numOfTeachers)
 {
     printf("Please enter the name of the teacher you want to find students for: \n");
     char *name = getLimitedLine(20);
@@ -569,7 +571,7 @@ int main(void)
     int numOfStudents;
     int numOfSubjects;
 
-    Student **students = allocate_structs_stud();
+    students = allocate_structs_stud();
     Teacher **teachers = allocate_structs_teach();
 
     int totalStudents = 0;
@@ -594,15 +596,14 @@ int main(void)
         switch (option)
         {
         case 1:
-            maxStudentsArraySize = expandStudentsStruct(&students, totalStudents, maxStudentsArraySize);
-            totalStudents = option_1(students, totalStudents);
+            totalStudents = option_1(totalStudents);
             if (totalStudents == -1)
             {
                 return -1;
             }
             break;
         case 2:
-            option_2(students, totalStudents);
+            option_2(totalStudents);
             break;
         case 3:
             totalTeachers = option_3(teachers, totalTeachers);
@@ -612,9 +613,9 @@ int main(void)
             break;
         case 5:
             printf("Total number of students: %d \n", totalStudents);
-            print_students(students, totalStudents);
+            print_students(totalStudents);
             printf("Actual: \n\n");
-            option_5(students, totalStudents);
+            option_5(totalStudents);
             break;
         case 6:
             print_teachers(teachers, totalTeachers);
@@ -622,13 +623,13 @@ int main(void)
             option_6(teachers, totalTeachers);
             break;
         case 7:
-            option_7(students, totalStudents);
+            option_7(totalStudents);
             break;
         case 8:
-            option_8(students, totalStudents, teachers, totalTeachers);
+            option_8(totalStudents, teachers, totalTeachers);
             break;
         case 9:
-            option_9(students, totalStudents, teachers, totalTeachers);
+            option_9(totalStudents, teachers, totalTeachers);
             break;
         case 0:
             printf("Attempting save...\n");
@@ -647,6 +648,6 @@ int main(void)
     return 0;
 }
 
-// add_subject(students, "James", "Chemistry", 95.0);
+// add_subject("James", "Chemistry", 95.0);
 // free(students);
 // free(studentNames);
