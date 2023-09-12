@@ -15,25 +15,33 @@ typedef struct
 
 typedef struct
 {
+    Teacher **teachers;
+    int currentSize;
+    int maxSize;
+} TeachersList;
+
+typedef struct
+{
     char *name;
     int subjectCount;
     Subject *subjects;
 } Student;
 
+typedef struct
+{
+    Student **students;
+    int currentSize;
+    int maxSize;
+} StudentsList;
+
 extern Student **students;
 extern Teacher **teachers;
 
+int studentExists2(StudentsList *list, char *studentName);
+
+int addStudent2(StudentsList *studentsList, char *studentName);
+
 int addTeacher(char *teacherName, char *subjectName, int numOfTeachers);
-
-char *getLine();
-
-char *getLimitedLine(int limit);
-
-int getYesNoResponse(char *prompt);
-
-int getPositiveInt();
-
-float getFloat();
 
 int save(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers);
 

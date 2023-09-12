@@ -3,7 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
-#include "header.h"
+#include "userinput.h"
+#include "userfunctions.h"
 
 /*
     Continuation of James Tam's School C Project by Siam Islam
@@ -17,13 +18,6 @@ const int QUIT = 0;
 
 Student **students;
 Teacher **teachers;
-
-typedef struct
-{
-    Student **students;
-    int currentSize;
-    int maxSize;
-} StudentsList;
 
 // check if you can still access unallocated memory when adding students
 // e.g. if num students set to 1, can still add more students and print them out.
@@ -488,41 +482,6 @@ int userAddNewStudents(int totalStudents)
     }
 
     return totalStudents;
-}
-
-int userAddNewStudents2(StudentsList *list)
-{
-    int numOfStudents = -1;
-
-    int response;
-    while (numOfStudents < 0)
-    {
-        printf("Please enter how many students you would like to register: \n");
-        numOfStudents = getPositiveInt();
-        if (numOfStudents == -1)
-        {
-            printf("Encountered an error. Try again.\n");
-        }
-    }
-
-    for (int i = 0; i < numOfStudents; i++)
-    {
-        // char *studentName = (char *)malloc(sizeof(char) * 20);
-        printf("Please enter each student name, pressing the Enter key for each: \n");
-        char *studentName = getLimitedLine(20);
-
-        if (studentExists2(list, studentName) >= 0)
-        {
-            printf("\nThe student '%s' exists in the system already!  Exiting back to main menu ... \n", studentName);
-            return 1;
-        }
-
-        addStudent2(list, studentName);
-
-        // userAddSubject(studentName);
-    }
-
-    return 1;
 }
 
 void userAddSubjectToExistingStudent(int numOfStudents)
