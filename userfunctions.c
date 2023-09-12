@@ -37,7 +37,7 @@ void userAddSubject2(StudentsList *list, char *studentName)
 
         addSubject(list, studentName, subjectName, grade);
     }
-    printf("Successfully added all %d subjects for student '%s' \n", numOfSubjects, studentName);
+    // printf("Successfully added %d subjects for student '%s' \n", numOfSubjects, studentName);
 }
 
 int userAddNewStudents2(StudentsList *list)

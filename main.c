@@ -12,7 +12,10 @@
 
 #define DEFAULT_STUDENTS_ARRAY_SIZE 2
 #define DEFAULT_TEACHERS_ARRAY_SIZE 2
-#define DEFAULT_SUBJECTS_ARRAY_SIZE 20
+#define DEFAULT_SUBJECTS_ARRAY_SIZE 2
+
+#define MAX_STUDENTS_ARRAY_SIZE 4
+#define MAX_TEACHERS_ARRAY_SIZE 4
 
 const int QUIT = 0;
 
@@ -134,6 +137,20 @@ int expandStudentsStruct(Student ***students, int currentSize, int maxSize)
     if (currentSize >= 0.5 * maxSize)
     {
         newMaxSize = maxSize * 2;
+
+        if (newMaxSize > MAX_STUDENTS_ARRAY_SIZE)
+        {
+            if (maxSize < MAX_STUDENTS_ARRAY_SIZE)
+            {
+                newMaxSize = MAX_STUDENTS_ARRAY_SIZE;
+            }
+            else
+            {
+                printf("Max array size has been reached. Memory not expanded.\n");
+                return maxSize;
+            }
+        }
+
         printf("Before realloc: %p\n", students);
         Student **newStudents = realloc(*students, newMaxSize * sizeof(Student *));
         if (newStudents == NULL)
@@ -164,6 +181,19 @@ int expandTeachersStruct(Teacher ***teachers, int currentSize, int maxSize)
     if (currentSize >= 0.5 * maxSize)
     {
         newMaxSize = maxSize * 2;
+
+        if (newMaxSize > MAX_TEACHERS_ARRAY_SIZE)
+        {
+            if (maxSize < MAX_TEACHERS_ARRAY_SIZE)
+            {
+                newMaxSize = MAX_TEACHERS_ARRAY_SIZE;
+            }
+            else
+            {
+                printf("Max array size has been reached. Memory not expanded.\n");
+                return maxSize;
+            }
+        }
 
         printf("Before realloc: %p\n", teachers);
 
@@ -197,6 +227,13 @@ int addStudent(StudentsList *studentsList, char *studentName)
     int index = studentsList->currentSize;
     printf("Adding student %s \n", studentName);
     studentsList->maxSize = expandStudentsStruct(&studentsList->students, studentsList->currentSize, studentsList->maxSize);
+
+    if (studentsList->currentSize >= studentsList->maxSize)
+    {
+        printf("No more space available to add students.\n");
+        return -1;
+    }
+
     Student **students = studentsList->students;
     students[index]->name = studentName;
 
@@ -221,6 +258,12 @@ void addTeacher(TeachersList *list, char *teacherName, char *subjectName)
     int index = list->currentSize;
     printf("Adding teacher %s \n", teacherName);
     list->maxSize = expandTeachersStruct(&list->teachers, index, list->maxSize);
+
+    if (list->currentSize >= list->maxSize)
+    {
+        printf("No more space available to add students.\n");
+        return;
+    }
 
     list->teachers[index]->name = teacherName;
     list->teachers[index]->subject.name = subjectName;
@@ -259,6 +302,12 @@ void addSubject(StudentsList *list, char *studentName, char *subjectName, float 
     int studentIndex = studentExists(list, studentName);
     if (studentIndex >= 0)
     {
+        printf("Student found.\n");
+        if (list->students[studentIndex]->subjectCount >= DEFAULT_SUBJECTS_ARRAY_SIZE)
+        {
+            printf("Max number of subjects already reached for this student.\n");
+            return;
+        }
         int subjectIndex = subjectExistsForStudent(list->students[studentIndex], subjectName);
         if (subjectIndex == -1) // subject does not already exist, so add a new subject
         {
@@ -378,10 +427,7 @@ int main(void)
             userAddSubjectToExistingStudent2(studentsList);
             break;
         case 3:
-            if (userAddNewTeachers2(teachersList) == -1)
-            {
-                return -1;
-            }
+            userAddNewTeachers2(teachersList);
             break;
         case 4:
             printf("Not implemented. Sorry.\n");
