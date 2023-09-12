@@ -84,7 +84,7 @@ int studentExists(char *studentName, int numOfStudents)
 {
     for (int i = 0; i < numOfStudents; i++)
     {
-        if (strcmp(students[i]->stud_name, studentName) == 0)
+        if (strcmp(students[i]->name, studentName) == 0)
         {
             return i;
         }
@@ -166,7 +166,7 @@ int addStudent(char *studentName, int numOfStudents)
     printf("Adding student %s \n", studentName);
     maxArraySize = expandStudentsStruct(&students, numOfStudents, maxArraySize);
 
-    students[index]->stud_name = studentName;
+    students[index]->name = studentName;
 
     students[index]->subjects = (Subject *)malloc(sizeof(Subject) * DEFAULT_SUBJECTS_ARRAY_SIZE); // allocate space using malloc() for student subjects;
     if (students[index]->subjects == NULL)
@@ -189,7 +189,7 @@ void addSubject(char *studentName, char *subjectName, float gradeInput)
     printf("Inside addSubject,  student name: %s \n", studentName);
     for (int i = 0; i < sizeof(students); i++)
     {
-        if (strcasecmp(students[i]->stud_name, studentName) == 0)
+        if (strcasecmp(students[i]->name, studentName) == 0)
         {
             int subjectCount = (*(students + i))->subjectCount;
 
@@ -235,7 +235,7 @@ void printStudents(int numOfStudents)
 
     for (int i = 0; i < numOfStudents; i++)
     {
-        printf("%d) STUDENT: %s ", i, students[i]->stud_name);
+        printf("%d) STUDENT: %s ", i, students[i]->name);
         printf("studies ");
 
         for (int j = 0; j < students[i]->subjectCount; j++)
@@ -436,7 +436,7 @@ void userFindStudentsForSubject(int numOfStudents)
         Student *student = students[i];
         if (subjectExistsForStudent(student, subject) >= 0)
         {
-            printf("%s\n", student->stud_name);
+            printf("%s\n", student->name);
             studentsStudyingSubject += 1;
         }
     }
@@ -481,7 +481,7 @@ void userFindGradesForStudent(int numOfStudents)
         int subjectIndex = subjectExistsForStudent(student, subject);
         if (subjectIndex >= 0)
         {
-            printf("%s's grade for subject %s: %0.2f\n", student->stud_name,
+            printf("%s's grade for subject %s: %0.2f\n", student->name,
                    student->subjects[subjectIndex].subj_name,
                    student->subjects[subjectIndex].grade);
         }
@@ -504,7 +504,7 @@ void userFindTeachersForStudent(int numOfStudents, Teacher **teachers, int numOf
     if (studentIndex >= 0)
     {
         Student *student = students[studentIndex];
-        printf("Teachers teaching %s:\n", student->stud_name);
+        printf("Teachers teaching %s:\n", student->name);
         for (int i = 0; i < student->subjectCount; i++)
         {
             int teacherIndex = teacherExistsForSubject(teachers, numOfTeachers, student->subjects[i].subj_name);
@@ -527,7 +527,7 @@ void userFindTeachersForStudent(int numOfStudents, Teacher **teachers, int numOf
 
 void displaySubject(Student *student)
 {
-    printf("Student: %s\n", student->stud_name);
+    printf("Student: %s\n", student->name);
     if (student->subjectCount < 1)
     {
         printf("No registered subject for this student.\n\n");
@@ -558,7 +558,7 @@ void displayStudents(int numOfStudents)
         }
         else
         {
-            printf("%s\n", students[i]->stud_name);
+            printf("%s\n", students[i]->name);
         }
     }
 }
@@ -580,7 +580,7 @@ void userFindStudentsForTeacher(int numOfStudents, Teacher **teachers, int numOf
             int studentIndex = subjectExistsForStudent(student, subject);
             if (studentIndex >= 0)
             {
-                printf("%s\n", student->stud_name);
+                printf("%s\n", student->name);
                 count++;
             }
         }

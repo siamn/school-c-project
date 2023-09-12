@@ -87,7 +87,7 @@ int save(Student **students, int numOfStudents, Teacher **teachers, int numOfTea
 // TODO: Maybe add check for return value of fprintf (same as in saveTeacher)
 int saveStudent(FILE *file, Student *student)
 {
-    fprintf(file, "\"%s\",%d,", student->stud_name, student->subjectCount);
+    fprintf(file, "\"%s\",%d,", student->name, student->subjectCount);
     for (int i = 0; i < student->subjectCount; i++)
     {
         // print each subject for the student at the end
