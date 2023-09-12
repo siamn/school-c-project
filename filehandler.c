@@ -87,15 +87,15 @@ int save(Student **students, int numOfStudents, Teacher **teachers, int numOfTea
 // TODO: Maybe add check for return value of fprintf (same as in saveTeacher)
 int saveStudent(FILE *file, Student *student)
 {
-    fprintf(file, "\"%s\",%d,", student->stud_name, student->subject_count);
-    for (int i = 0; i < student->subject_count; i++)
+    fprintf(file, "\"%s\",%d,", student->stud_name, student->subjectCount);
+    for (int i = 0; i < student->subjectCount; i++)
     {
         // print each subject for the student at the end
         // (after the first two fields, name and subject count) consecutively
         Subject subject = student->subjects[i];
         fprintf(file, "\"%s\",%0.2f", subject.subj_name, subject.grade);
 
-        if (i < student->subject_count - 1)
+        if (i < student->subjectCount - 1)
         {
             fprintf(file, ","); // print comma if not last field in list of subjects
         }
