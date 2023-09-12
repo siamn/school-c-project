@@ -3,7 +3,7 @@
 #include "userinput.h"
 #include "userfunctions.h"
 
-void userAddSubject2(StudentsList *list, char *studentName)
+void userAddSubject(StudentsList *list, char *studentName)
 {
     int numOfSubjects = -1;
     while (numOfSubjects < 0)
@@ -40,7 +40,7 @@ void userAddSubject2(StudentsList *list, char *studentName)
     // printf("Successfully added %d subjects for student '%s' \n", numOfSubjects, studentName);
 }
 
-int userAddNewStudents2(StudentsList *list)
+int userAddNewStudents(StudentsList *list)
 {
     int numOfStudents = -1;
 
@@ -69,13 +69,13 @@ int userAddNewStudents2(StudentsList *list)
 
         addStudent(list, studentName);
 
-        userAddSubject2(list, studentName);
+        userAddSubject(list, studentName);
     }
 
     return 1;
 }
 
-void userAddSubjectToExistingStudent2(StudentsList *list)
+void userAddSubjectToExistingStudent(StudentsList *list)
 {
     printf("Please enter an existing student to add a subject and/or grade \n");
     char *studentName = getLimitedLine(20);
@@ -88,10 +88,10 @@ void userAddSubjectToExistingStudent2(StudentsList *list)
 
     printf("Student %s has been found! \n", studentName);
 
-    userAddSubject2(list, studentName);
+    userAddSubject(list, studentName);
 }
 
-void userFindStudentsForSubject2(StudentsList *list)
+void userFindStudentsForSubject(StudentsList *list)
 {
     printf("Please enter the name of the subject you want to find a list of students for: \n");
     char *subject = getLimitedLine(20);
@@ -117,7 +117,7 @@ void userFindStudentsForSubject2(StudentsList *list)
     }
 }
 
-void userFindGradesForStudent2(StudentsList *list)
+void userFindGradesForStudent(StudentsList *list)
 {
     printf("Please enter the name of the student you want to find grades for: \n");
     char *name = getLimitedLine(20);
@@ -145,7 +145,7 @@ void userFindGradesForStudent2(StudentsList *list)
     }
 }
 
-int userAddNewTeachers2(TeachersList *list)
+int userAddNewTeachers(TeachersList *list)
 {
     int numOfTeachers = 0;
 
@@ -183,7 +183,7 @@ int userAddNewTeachers2(TeachersList *list)
     return 1;
 }
 
-void userFindTeacherForSubject2(TeachersList *list)
+void userFindTeacherForSubject(TeachersList *list)
 {
     printf("Please enter the name of the subject you want to find the teacher for: \n");
     char *subject = getLimitedLine(20);
@@ -208,7 +208,7 @@ void userFindTeacherForSubject2(TeachersList *list)
     }
 }
 
-void userFindTeachersForStudent2(StudentsList *studentsList, TeachersList *teachersList)
+void userFindTeachersForStudent(StudentsList *studentsList, TeachersList *teachersList)
 {
     printf("Please enter the name of the student you want to find teachers for: \n");
     char *name = getLimitedLine(20);
@@ -237,7 +237,7 @@ void userFindTeachersForStudent2(StudentsList *studentsList, TeachersList *teach
     }
 }
 
-void userFindStudentsForTeacher2(StudentsList *studentsList, TeachersList *teachersList)
+void userFindStudentsForTeacher(StudentsList *studentsList, TeachersList *teachersList)
 {
     printf("Please enter the name of the teacher you want to find students for: \n");
     char *name = getLimitedLine(20);

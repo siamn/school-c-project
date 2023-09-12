@@ -418,16 +418,16 @@ int main(void)
         switch (option)
         {
         case 1:
-            if (userAddNewStudents2(studentsList) == -1)
+            if (userAddNewStudents(studentsList) == -1)
             {
                 return -1;
             }
             break;
         case 2:
-            userAddSubjectToExistingStudent2(studentsList);
+            userAddSubjectToExistingStudent(studentsList);
             break;
         case 3:
-            userAddNewTeachers2(teachersList);
+            userAddNewTeachers(teachersList);
             break;
         case 4:
             printf("Not implemented. Sorry.\n");
@@ -435,19 +435,19 @@ int main(void)
             displayTeachers(teachersList);
             break;
         case 5:
-            userFindStudentsForSubject2(studentsList);
+            userFindStudentsForSubject(studentsList);
             break;
         case 6:
-            userFindTeacherForSubject2(teachersList);
+            userFindTeacherForSubject(teachersList);
             break;
         case 7:
-            userFindGradesForStudent2(studentsList);
+            userFindGradesForStudent(studentsList);
             break;
         case 8:
-            userFindTeachersForStudent2(studentsList, teachersList);
+            userFindTeachersForStudent(studentsList, teachersList);
             break;
         case 9:
-            userFindStudentsForTeacher2(studentsList, teachersList);
+            userFindStudentsForTeacher(studentsList, teachersList);
             break;
         case 10:
             userDisplayStudents(studentsList);
@@ -485,24 +485,24 @@ int main(void)
     // addSubject(studentsList, "Siam", "Science", 100.00);
     // userDisplayStudents(studentsList);
 
-    // userFindGradesForStudent2(studentsList);
+    // userFindGradesForStudent(studentsList);
 
-    // userAddNewTeachers2(teachersList);
+    // userAddNewTeachers(teachersList);
     // displayTeachers(teachersList);
 
-    // userFindTeacherForSubject2(teachersList);
+    // userFindTeacherForSubject(teachersList);
 
-    // userFindTeachersForStudent2(studentsList, teachersList);
-    // userFindStudentsForTeacher2(studentsList, teachersList);
+    // userFindTeachersForStudent(studentsList, teachersList);
+    // userFindStudentsForTeacher(studentsList, teachersList);
 
     // save(studentsList, teachersList);
-    // userAddNewStudents2(list);
+    // userAddNewStudents(list);
     // userDisplayStudents(list);
 
-    // userAddSubjectToExistingStudent2(list);
+    // userAddSubjectToExistingStudent(list);
     // userDisplayStudents(list);
 
-    // userFindStudentsForSubject2(list);
+    // userFindStudentsForSubject(list);
 
     // return 0;
 }

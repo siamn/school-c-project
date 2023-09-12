@@ -1,21 +1,21 @@
 #include "header.h"
 
-void userAddSubject2(StudentsList *list, char *studentName);
+void userAddSubject(StudentsList *list, char *studentName);
 
-int userAddNewStudents2(StudentsList *list);
+int userAddNewStudents(StudentsList *list);
 
-void userAddSubjectToExistingStudent2(StudentsList *list);
+void userAddSubjectToExistingStudent(StudentsList *list);
 
-int userAddNewTeachers2(TeachersList *list);
+int userAddNewTeachers(TeachersList *list);
 
-void userFindStudentsForSubject2(StudentsList *list);
+void userFindStudentsForSubject(StudentsList *list);
 
-void userFindTeacherForSubject2(TeachersList *list);
+void userFindTeacherForSubject(TeachersList *list);
 
-void userFindGradesForStudent2(StudentsList *list);
+void userFindGradesForStudent(StudentsList *list);
 
-void userFindTeachersForStudent2(StudentsList *studentsList, TeachersList *teachersList);
+void userFindTeachersForStudent(StudentsList *studentsList, TeachersList *teachersList);
 
-void userFindStudentsForTeacher2(StudentsList *studentsList, TeachersList *teachersList);
+void userFindStudentsForTeacher(StudentsList *studentsList, TeachersList *teachersList);
 
 void userDisplayStudents(StudentsList *list);
