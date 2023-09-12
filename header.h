@@ -9,7 +9,7 @@ typedef struct
 
 typedef struct
 {
-    char teacher_name[50];
+    char *name;
     Subject subject;
 } Teacher;
 

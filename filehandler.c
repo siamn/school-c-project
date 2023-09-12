@@ -32,8 +32,8 @@ int readTeachers(Teacher **teachers)
         // printf("Linelen: %zd\n", linelen);
         // printf("'%s'\n", line);
         //("Loop\n");
-        char *teacherName;
-        char *subjectName;
+        char *teacherName = malloc(20);
+        char *subjectName = malloc(20);
         int parsedFields = sscanf(line, "\"%19[^\"]\",\"%19[^\"]\"", teacherName, subjectName);
         // printf("Loop 2\n");
         if (parsedFields == teacherFields)
@@ -109,5 +109,5 @@ int saveStudent(FILE *file, Student *student)
 int saveTeacher(FILE *file, Teacher *teacher)
 {
     // fprintf returns a negative value if an error occurs
-    return fprintf(file, "\"%s\",\"%s\"\n", teacher->teacher_name, teacher->subject.subj_name);
+    return fprintf(file, "\"%s\",\"%s\"\n", teacher->name, teacher->subject.subj_name);
 }

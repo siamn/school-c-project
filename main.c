@@ -104,11 +104,11 @@ int subjectExistsForStudent(Student *student, char *subject)
     return -1;
 }
 
-int exists_teacher(Teacher **teachers, int numOfTeachers, char *teacher)
+int teacherExists(Teacher **teachers, int numOfTeachers, char *teacher)
 {
     for (int i = 0; i < numOfTeachers; i++)
     {
-        if (strcmp(teachers[i]->teacher_name, teacher) == 0)
+        if (strcmp(teachers[i]->name, teacher) == 0)
         {
             return i;
         }
@@ -116,7 +116,7 @@ int exists_teacher(Teacher **teachers, int numOfTeachers, char *teacher)
     return -1;
 }
 
-int exists_teacher_for_subject(Teacher **teachers, int numOfTeachers, char *subject)
+int teacherExistsForSubject(Teacher **teachers, int numOfTeachers, char *subject)
 {
     for (int i = 0; i < numOfTeachers; i++)
     {
@@ -214,15 +214,13 @@ int add_teacher(Teacher **teachers, char *teacherName, char *subjectName, int nu
     int index = numOfTeachers;
     printf("Adding teacher %s \n", teacherName);
 
-    char *ptr = (char *)malloc(sizeof(char) * 20);
-    ptr = teacherName;
+    teachers[index]->name = teacherName;
+    teachers[index]->subject.subj_name = subjectName;
 
-    strcpy((*(teachers + index))->teacher_name, teacherName);
-    (*(teachers + index))->subject.subj_name = subjectName;
+    printf("\nSuccessfully added teacher '%s' teaching %s to the school database system.  \n\n", teachers[index]->name,
+           teachers[index]->subject.subj_name);
 
     index++;
-
-    printf("\nSuccessfully added teacher '%s' teaching %s to the school database system.  \n\n", teacherName, subjectName);
 
     return index;
 }
@@ -263,7 +261,7 @@ void print_teachers(Teacher **teachers, int numOfTeachers)
 
     for (int i = 0; i < numOfTeachers; i++)
     {
-        printf("\n%d) Teacher '%s' teaches %s \n", (i + 1), teachers[i]->teacher_name, teachers[i]->subject.subj_name);
+        printf("\n%d) Teacher '%s' teaches %s \n", (i + 1), teachers[i]->name, teachers[i]->subject.subj_name);
     }
 }
 
@@ -405,12 +403,12 @@ int option_3(Teacher **teachers, int totalTeachers)
         printf("Please enter the subject name (1 subject allowed): \n");
         subjectName = getLimitedLine(20);
 
-        if (exists_teacher(teachers, totalTeachers, teacherName) >= 0)
+        if (teacherExists(teachers, totalTeachers, teacherName) >= 0)
         {
             printf("\nThe teacher '%s' exists in the system already!  Exiting back to main menu ... \n", teacherName);
             return totalTeachers;
         }
-        else if (exists_teacher_for_subject(teachers, totalTeachers, subjectName) >= 0)
+        else if (teacherExistsForSubject(teachers, totalTeachers, subjectName) >= 0)
         {
             printf("\nA teacher already exists in the system for the subject '%s'.\nExiting back to main menu ... \n", subjectName);
             return totalTeachers;
@@ -460,7 +458,7 @@ void option_6(Teacher **teachers, int numOfTeachers)
         Teacher *teacher = teachers[i];
         if (strcmp(subject, teacher->subject.subj_name) == 0)
         {
-            printf("%s", teacher->teacher_name);
+            printf("%s", teacher->name);
             count++;
         }
     }
@@ -509,11 +507,11 @@ void option_8(int numOfStudents, Teacher **teachers, int numOfTeachers)
         printf("Teachers teaching %s:\n", student->stud_name);
         for (int i = 0; i < student->subject_count; i++)
         {
-            int teacherIndex = exists_teacher_for_subject(teachers, numOfTeachers, student->subjects[i].subj_name);
+            int teacherIndex = teacherExistsForSubject(teachers, numOfTeachers, student->subjects[i].subj_name);
             if (teacherIndex >= 0)
             {
                 Teacher *teacher = teachers[teacherIndex];
-                printf("%s teaches %s\n", teacher->teacher_name, student->subjects[i].subj_name);
+                printf("%s teaches %s\n", teacher->name, student->subjects[i].subj_name);
             }
             else
             {
@@ -563,12 +561,12 @@ void option_9(int numOfStudents, Teacher **teachers, int numOfTeachers)
 {
     printf("Please enter the name of the teacher you want to find students for: \n");
     char *name = getLimitedLine(20);
-    int teacherIndex = exists_teacher(teachers, numOfTeachers, name);
+    int teacherIndex = teacherExists(teachers, numOfTeachers, name);
     int count = 0;
     if (teacherIndex >= 0)
     {
         Teacher *teacher = teachers[teacherIndex];
-        printf("Students taught by teacher %s:\n", teacher->teacher_name);
+        printf("Students taught by teacher %s:\n", teacher->name);
         char *subject = teacher->subject.subj_name;
         for (int i = 0; i < numOfStudents; i++)
         {
@@ -605,7 +603,7 @@ int main(void)
     int option;
 
     totalTeachers = readTeachers(teachers);
-
+    printf("total_teachers: %d\n", totalTeachers);
     while (option != QUIT)
     {
         main_menu();
