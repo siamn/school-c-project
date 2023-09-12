@@ -159,7 +159,7 @@ int expandStudentsStruct(Student ***students, int currentSize, int maxSize)
     return maxSize;
 }
 
-int add_student(char *studentName, int numOfStudents)
+int addStudent(char *studentName, int numOfStudents)
 {
     static int maxArraySize = DEFAULT_STUDENTS_ARRAY_SIZE;
     int index = numOfStudents;
@@ -184,9 +184,9 @@ int add_student(char *studentName, int numOfStudents)
     return index;
 }
 
-void add_subject(char *studentName, char *subjectName, float gradeInput)
+void addSubject(char *studentName, char *subjectName, float gradeInput)
 {
-    printf("Inside add_subject,  student name: %s \n", studentName);
+    printf("Inside addSubject,  student name: %s \n", studentName);
     for (int i = 0; i < sizeof(students); i++)
     {
         if (strcasecmp(students[i]->stud_name, studentName) == 0)
@@ -209,7 +209,7 @@ void add_subject(char *studentName, char *subjectName, float gradeInput)
     printf("\nSuccessfully added subject %s with grade %0.2f for student '%s' to the school database system 😄  \n\n", subjectName, gradeInput, studentName);
 }
 
-int add_teacher(Teacher **teachers, char *teacherName, char *subjectName, int numOfTeachers)
+int addTeacher(Teacher **teachers, char *teacherName, char *subjectName, int numOfTeachers)
 {
     int index = numOfTeachers;
     printf("Adding teacher %s \n", teacherName);
@@ -318,7 +318,7 @@ void user_add_subject(char *studentName)
             // printf("You have entered %s. No grade to be entered. \n", grade_option);
         }
 
-        add_subject(studentName, subjectName, grade);
+        addSubject(studentName, subjectName, grade);
     }
     printf("Successfully added all %d subjects for student '%s' \n", numOfSubjects, studentName);
 }
@@ -359,7 +359,7 @@ int option_1(int totalStudents)
             return totalStudents;
         }
 
-        totalStudents = add_student(studentName, totalStudents);
+        totalStudents = addStudent(studentName, totalStudents);
 
         user_add_subject(studentName);
     }
@@ -414,7 +414,7 @@ int option_3(Teacher **teachers, int totalTeachers)
             return totalTeachers;
         }
 
-        totalTeachers = add_teacher(teachers, teacherName, subjectName, totalTeachers);
+        totalTeachers = addTeacher(teachers, teacherName, subjectName, totalTeachers);
     }
 
     return totalTeachers;
@@ -674,6 +674,6 @@ int main(void)
     return 0;
 }
 
-// add_subject("James", "Chemistry", 95.0);
+// addSubject("James", "Chemistry", 95.0);
 // free(students);
 // free(studentNames);
