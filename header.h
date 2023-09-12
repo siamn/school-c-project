@@ -34,9 +34,6 @@ typedef struct
     int maxSize;
 } StudentsList;
 
-extern Student **students;
-extern Teacher **teachers;
-
 int studentExists2(StudentsList *list, char *studentName);
 
 int subjectExistsForStudent(Student *student, char *subject);

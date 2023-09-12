@@ -55,8 +55,7 @@ int getYesNoResponse(char *msg)
         printf("%s", msg);
         printf("Please type 'yes'/'y'  or 'no'/'n' below:\n");
         input = getLine();
-        printf("%lu\n", strlen(input));
-        printf("%lu\n", strlen("y"));
+
         if (strcmp(input, "yes") == 0 || strcmp(input, "y") == 0)
         {
             free(input); // free input as no longer needed.
