@@ -130,11 +130,36 @@ int teacherExists(int numOfTeachers, char *teacher)
     return -1;
 }
 
+int teacherExists2(TeachersList *list, char *teacher)
+{
+    for (int i = 0; i < list->currentSize; i++)
+    {
+        if (strcmp(list->teachers[i]->name, teacher) == 0)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
 int teacherExistsForSubject(int numOfTeachers, char *subject)
 {
     for (int i = 0; i < numOfTeachers; i++)
     {
         Teacher *teacher = teachers[i];
+        if (strcmp(subject, teacher->subject.name) == 0)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int teacherExistsForSubject2(TeachersList *list, char *subject)
+{
+    for (int i = 0; i < list->currentSize; i++)
+    {
+        Teacher *teacher = list->teachers[i];
         if (strcmp(subject, teacher->subject.name) == 0)
         {
             return i;
@@ -256,6 +281,21 @@ int addStudent2(StudentsList *studentsList, char *studentName)
     return 1;
 }
 
+void addTeacher2(TeachersList *list, char *teacherName, char *subjectName)
+{
+    int index = list->currentSize;
+    printf("Adding teacher %s \n", teacherName);
+    list->maxSize = expandTeachersStruct(&list->teachers, index, list->maxSize);
+
+    list->teachers[index]->name = teacherName;
+    list->teachers[index]->subject.name = subjectName;
+
+    printf("\nSuccessfully added teacher '%s' teaching %s to the school database system.  \n\n", list->teachers[index]->name,
+           list->teachers[index]->subject.name);
+
+    list->currentSize++;
+}
+
 void displayStudents2(StudentsList *list)
 {
     printf("Students:\n");
@@ -264,6 +304,17 @@ void displayStudents2(StudentsList *list)
     {
         printf("%s\n", students[i]->name);
     }
+}
+
+void displayTeachers(TeachersList *list)
+{
+    printf("Teachers:\n");
+    Teacher **teachers = list->teachers;
+    for (int i = 0; i < list->currentSize; i++)
+    {
+        printf("%s teaches %s\n", teachers[i]->name, teachers[i]->subject.name);
+    }
+    printf("\n");
 }
 
 void addSubject(char *studentName, char *subjectName, float gradeInput)
@@ -750,35 +801,51 @@ int main(void)
     // totalTeachers = readTeachers();
     printf("Number of teachers read from file: %d\n", totalTeachers);
 
-    StudentsList *list = malloc(sizeof(StudentsList) * 1);
-    if (list == NULL)
+    StudentsList *studentsList = malloc(sizeof(StudentsList) * 1);
+    if (studentsList == NULL)
     {
-        perror("Couldn't allocate list.");
+        perror("Couldn't allocate students list.");
         return -1;
     }
 
-    list->students = students;
-    list->currentSize = 0;
-    list->maxSize = DEFAULT_STUDENTS_ARRAY_SIZE;
+    TeachersList *teachersList = malloc(sizeof(StudentsList) * 1);
+    if (teachersList == NULL)
+    {
+        perror("Couldn't allocate teachers list.");
+        return -1;
+    }
 
-    addStudent2(list, "Siam");
-    displayStudents2(list);
-    addStudent2(list, "Tom");
-    displayStudents2(list);
-    addStudent2(list, "Smith");
-    displayStudents2(list);
-    addStudent2(list, "Smithx");
-    displayStudents2(list);
-    addSubject2(list, "Siam", "Science", 100.00);
-    displayStudents3(list);
+    studentsList->students = students;
+    studentsList->currentSize = 0;
+    studentsList->maxSize = DEFAULT_STUDENTS_ARRAY_SIZE;
 
-    userAddNewStudents2(list);
-    displayStudents3(list);
+    teachersList->teachers = teachers;
+    teachersList->currentSize = 0;
+    teachersList->maxSize = DEFAULT_TEACHERS_ARRAY_SIZE;
 
-    userAddSubjectToExistingStudent2(list);
-    displayStudents3(list);
+    addStudent2(studentsList, "Siam");
+    displayStudents2(studentsList);
+    addStudent2(studentsList, "Tom");
+    displayStudents2(studentsList);
+    addStudent2(studentsList, "Smith");
+    displayStudents2(studentsList);
+    addStudent2(studentsList, "Smithx");
+    displayStudents2(studentsList);
+    addSubject2(studentsList, "Siam", "Science", 100.00);
+    displayStudents3(studentsList);
 
-    userFindStudentsForSubject2(list);
+    userFindGradesForStudent2(studentsList);
+
+    userAddNewTeachers2(teachersList);
+    displayTeachers(teachersList);
+
+    // userAddNewStudents2(list);
+    // displayStudents3(list);
+
+    // userAddSubjectToExistingStudent2(list);
+    // displayStudents3(list);
+
+    // userFindStudentsForSubject2(list);
 
     // while (option != QUIT)
     // {

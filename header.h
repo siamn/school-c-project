@@ -47,6 +47,12 @@ int addStudent2(StudentsList *studentsList, char *studentName);
 
 int addTeacher(char *teacherName, char *subjectName, int numOfTeachers);
 
+void addTeacher2(TeachersList *list, char *teacherName, char *subjectName);
+
+int teacherExists2(TeachersList *list, char *teacher);
+
+int teacherExistsForSubject2(TeachersList *list, char *subject);
+
 int save(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers);
 
 int readTeachers();

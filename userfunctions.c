@@ -144,3 +144,41 @@ void userFindGradesForStudent2(StudentsList *list)
         printf("Could not find this student %s in our database.\n", name);
     }
 }
+
+int userAddNewTeachers2(TeachersList *list)
+{
+    int numOfTeachers = 0;
+
+    printf("Please enter how many teachers you would like to add \n");
+    numOfTeachers = getPositiveInt(); // returns -1 if invalid input given
+
+    // invalid number of teachers entered so return to main menu
+    if (numOfTeachers < 0)
+    {
+        return -1;
+    }
+
+    for (int i = 0; i < numOfTeachers; i++)
+    {
+        printf("Please enter the teacher name (%d out of %d teachers): \n", (i + 1), numOfTeachers);
+        char *teacherName = getLimitedLine(20);
+
+        printf("Please enter the subject name (1 subject allowed): \n");
+        char *subjectName = getLimitedLine(20);
+
+        if (teacherExists2(list, teacherName) >= 0)
+        {
+            printf("\nThe teacher '%s' exists in the system already!  Exiting back to main menu ... \n", teacherName);
+            return -1;
+        }
+        else if (teacherExistsForSubject2(list, subjectName) >= 0)
+        {
+            printf("\nA teacher already exists in the system for the subject '%s'.\nExiting back to main menu ... \n", subjectName);
+            return -1;
+        }
+
+        addTeacher2(list, teacherName, subjectName);
+    }
+
+    return 1;
+}
