@@ -182,3 +182,28 @@ int userAddNewTeachers2(TeachersList *list)
 
     return 1;
 }
+
+void userFindTeacherForSubject2(TeachersList *list)
+{
+    printf("Please enter the name of the subject you want to find the teacher for: \n");
+    char *subject = getLimitedLine(20);
+
+    printf("Teacher teaching subject %s:\n", subject);
+    int count = 0;
+    // added room for displaying multiple teachers if they teach the same subject in the future
+    // even though current design supports 1 teacher per subject
+    for (int i = 0; i < list->currentSize; i++)
+    {
+        Teacher *teacher = list->teachers[i];
+        if (strcmp(subject, teacher->subject.name) == 0)
+        {
+            printf("%s\n", teacher->name);
+            count++;
+            // add return here if this behaviour is unwanted
+        }
+    }
+    if (count < 1)
+    {
+        printf("No teacher is currently teacher this subject.\n");
+    }
+}

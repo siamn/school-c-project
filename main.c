@@ -839,6 +839,7 @@ int main(void)
     userAddNewTeachers2(teachersList);
     displayTeachers(teachersList);
 
+    userFindTeacherForSubject2(teachersList);
     // userAddNewStudents2(list);
     // displayStudents3(list);
 
