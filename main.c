@@ -225,7 +225,7 @@ int addTeacher(Teacher **teachers, char *teacherName, char *subjectName, int num
     return index;
 }
 
-void print_students(int numOfStudents)
+void printStudents(int numOfStudents)
 {
     if (numOfStudents == 0)
     {
@@ -251,7 +251,7 @@ void print_students(int numOfStudents)
     }
 }
 
-void print_teachers(Teacher **teachers, int numOfTeachers)
+void printTeachers(Teacher **teachers, int numOfTeachers)
 {
     if (numOfTeachers == 0)
     {
@@ -265,7 +265,7 @@ void print_teachers(Teacher **teachers, int numOfTeachers)
     }
 }
 
-void main_menu()
+void displayMenuOptions()
 {
     printf("\n ------------------------------------ \n");
     printf("Welcome to the School Management system \n");
@@ -284,7 +284,7 @@ void main_menu()
     printf("------------------------------------ \n");
 }
 
-void user_add_subject(char *studentName)
+void userAddSubject(char *studentName)
 {
     int numOfSubjects = -1;
     while (numOfSubjects < 0)
@@ -323,7 +323,7 @@ void user_add_subject(char *studentName)
     printf("Successfully added all %d subjects for student '%s' \n", numOfSubjects, studentName);
 }
 
-int option_1(int totalStudents)
+int userAddNewStudents(int totalStudents)
 {
     long numOfStudents = -1;
 
@@ -361,13 +361,13 @@ int option_1(int totalStudents)
 
         totalStudents = addStudent(studentName, totalStudents);
 
-        user_add_subject(studentName);
+        userAddSubject(studentName);
     }
 
     return totalStudents;
 }
 
-void option_2(int numOfStudents)
+void userAddSubjectToExistingStudent(int numOfStudents)
 {
     char *studentName = (char *)malloc(sizeof(char) * 20);
     printf("Please enter an existing student to add a subject and/or grade \n");
@@ -382,7 +382,7 @@ void option_2(int numOfStudents)
 
     printf("Student %s has been found! \n", studentName);
 
-    user_add_subject(studentName);
+    userAddSubject(studentName);
 }
 
 int option_3(Teacher **teachers, int totalTeachers)
@@ -606,7 +606,7 @@ int main(void)
     printf("total_teachers: %d\n", totalTeachers);
     while (option != QUIT)
     {
-        main_menu();
+        displayMenuOptions();
 
         option = getPositiveInt();
 
@@ -619,14 +619,14 @@ int main(void)
         switch (option)
         {
         case 1:
-            totalStudents = option_1(totalStudents);
+            totalStudents = userAddNewStudents(totalStudents);
             if (totalStudents == -1)
             {
                 return -1;
             }
             break;
         case 2:
-            option_2(totalStudents);
+            userAddSubjectToExistingStudent(totalStudents);
             break;
         case 3:
             totalTeachers = option_3(teachers, totalTeachers);
@@ -636,12 +636,12 @@ int main(void)
             break;
         case 5:
             printf("Total number of students: %d \n", totalStudents);
-            print_students(totalStudents);
+            printStudents(totalStudents);
             printf("Actual: \n\n");
             option_5(totalStudents);
             break;
         case 6:
-            print_teachers(teachers, totalTeachers);
+            printTeachers(teachers, totalTeachers);
             printf("Actual: \n\n");
             option_6(teachers, totalTeachers);
             break;
