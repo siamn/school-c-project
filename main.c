@@ -775,6 +775,9 @@ int main(void)
     userAddNewStudents2(list);
     displayStudents3(list);
 
+    userAddSubjectToExistingStudent2(list);
+    displayStudents3(list);
+
     // while (option != QUIT)
     // {
     //     displayMenuOptions();

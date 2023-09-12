@@ -1,6 +1,6 @@
 #include "header.h"
 
-int userAddSubject2(StudentsList *list);
+void userAddSubject2(StudentsList *list, char *studentName);
 
 int userAddNewStudents2(StudentsList *list);
 
