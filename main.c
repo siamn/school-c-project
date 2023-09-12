@@ -25,7 +25,7 @@ e.g. add student with subject Math with no grade using option 1
 then use option 2 to add grade for same subject by typing Math for same student
 another math subject is added rather than replacing the existing math subject */
 
-Student **allocate_structs_stud(void)
+Student **allocateStudentsStructs(void)
 {
     printf("Allocating memory for struct array. \n");
     int size = DEFAULT_STUDENTS_ARRAY_SIZE;
@@ -52,7 +52,7 @@ Student **allocate_structs_stud(void)
     return (students);
 }
 
-Teacher **allocate_structs_teach(void)
+Teacher **allocateTeachersStructs(void)
 {
     printf("Allocating memory for teacher struct array. \n");
 
@@ -80,7 +80,7 @@ Teacher **allocate_structs_teach(void)
     return (teachers);
 }
 
-int exists(char *studentName, int numOfStudents)
+int studentExists(char *studentName, int numOfStudents)
 {
     for (int i = 0; i < numOfStudents; i++)
     {
@@ -92,7 +92,7 @@ int exists(char *studentName, int numOfStudents)
     return -1;
 }
 
-int exists_subject(Student *student, char *subject)
+int subjectExistsForStudent(Student *student, char *subject)
 {
     for (int i = 0; i < student->subject_count; i++)
     {
@@ -355,7 +355,7 @@ int option_1(int totalStudents)
 
         // studentName[strcspn(studentName, "\n")] = 0; // removing the new line here
 
-        if (exists(studentName, totalStudents) >= 0)
+        if (studentExists(studentName, totalStudents) >= 0)
         {
             printf("\nThe student '%s' exists in the system already!  Exiting back to main menu ... \n", studentName);
             return totalStudents;
@@ -376,7 +376,7 @@ void option_2(int numOfStudents)
     char *name = getLimitedLine(20);
     strcpy(studentName, name);
 
-    if (exists(studentName, numOfStudents) == -1)
+    if (studentExists(studentName, numOfStudents) == -1)
     {
         printf("The student '%s' does not exist in the system. Exiting back to main menu ... \n", studentName);
         return;
@@ -436,7 +436,7 @@ void option_5(int numOfStudents)
     for (int i = 0; i < numOfStudents; i++)
     {
         Student *student = students[i];
-        if (exists_subject(student, subject) >= 0)
+        if (subjectExistsForStudent(student, subject) >= 0)
         {
             printf("%s\n", student->stud_name);
             studentsStudyingSubject += 1;
@@ -476,11 +476,11 @@ void option_7(int numOfStudents)
     char *name = getLimitedLine(20);
     printf("Please enter the name of the subject you want to find the student's grades for: \n");
     char *subject = getLimitedLine(20);
-    int studentIndex = exists(name, numOfStudents);
+    int studentIndex = studentExists(name, numOfStudents);
     if (studentIndex >= 0)
     {
         Student *student = students[studentIndex];
-        int subjectIndex = exists_subject(student, subject);
+        int subjectIndex = subjectExistsForStudent(student, subject);
         if (subjectIndex >= 0)
         {
             printf("%s's grade for subject %s: %0.2f\n", student->stud_name,
@@ -502,7 +502,7 @@ void option_8(int numOfStudents, Teacher **teachers, int numOfTeachers)
 {
     printf("Please enter the name of the student you want to find teachers for: \n");
     char *name = getLimitedLine(20);
-    int studentIndex = exists(name, numOfStudents);
+    int studentIndex = studentExists(name, numOfStudents);
     if (studentIndex >= 0)
     {
         Student *student = students[studentIndex];
@@ -573,7 +573,7 @@ void option_9(int numOfStudents, Teacher **teachers, int numOfTeachers)
         for (int i = 0; i < numOfStudents; i++)
         {
             Student *student = students[i];
-            int studentIndex = exists_subject(student, subject);
+            int studentIndex = subjectExistsForStudent(student, subject);
             if (studentIndex >= 0)
             {
                 printf("%s\n", student->stud_name);
@@ -596,8 +596,8 @@ int main(void)
     int numOfStudents;
     int numOfSubjects;
 
-    students = allocate_structs_stud();
-    Teacher **teachers = allocate_structs_teach();
+    students = allocateStudentsStructs();
+    Teacher **teachers = allocateTeachersStructs();
 
     int totalStudents = 0;
     int totalTeachers = 0;
