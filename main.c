@@ -823,6 +823,8 @@ int main(void)
     teachersList->currentSize = 0;
     teachersList->maxSize = DEFAULT_TEACHERS_ARRAY_SIZE;
 
+    readTeachers(teachersList);
+
     addStudent2(studentsList, "Siam");
     displayStudents2(studentsList);
     addStudent2(studentsList, "Tom");
@@ -843,6 +845,8 @@ int main(void)
 
     userFindTeachersForStudent2(studentsList, teachersList);
     userFindStudentsForTeacher2(studentsList, teachersList);
+
+    save(studentsList, teachersList);
     // userAddNewStudents2(list);
     // displayStudents3(list);
 

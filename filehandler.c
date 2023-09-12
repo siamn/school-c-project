@@ -10,7 +10,7 @@ int saveTeacher(FILE *file, Teacher *teacher);
 //  teachers and students arrays
 
 // Returns total number of teachers added after reading from file.
-int readTeachers()
+int readTeachers(TeachersList *list)
 {
     // printf("here in read\n");
     const int teacherFields = 2;
@@ -20,7 +20,7 @@ int readTeachers()
     if (file == NULL)
     {
         perror("Unable to open teachers file.\n");
-        return numOfTeachers;
+        return -1;
     }
     // printf("here in read3\n");
     char *line = NULL;
@@ -38,7 +38,8 @@ int readTeachers()
         // printf("Loop 2\n");
         if (parsedFields == teacherFields)
         {
-            numOfTeachers = addTeacher(teacherName, subjectName, numOfTeachers);
+            addTeacher2(list, teacherName, subjectName);
+            // numOfTeachers = addTeacher(teacherName, subjectName, numOfTeachers);
         }
         else
         {
@@ -50,10 +51,10 @@ int readTeachers()
     free(line);
     fclose(file);
 
-    return numOfTeachers;
+    return 1;
 }
 
-int save(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers)
+int save(StudentsList *studentsList, TeachersList *teachersList)
 {
     FILE *studentsFile = fopen("students.csv", "w"); // open file in write mode (creates new file if it doesn't already exist)
     FILE *teachersFile = fopen("teachers.csv", "w");
@@ -63,17 +64,17 @@ int save(Student **students, int numOfStudents, Teacher **teachers, int numOfTea
         return -1;
     }
 
-    for (int i = 0; i < numOfStudents; i++)
+    for (int i = 0; i < studentsList->currentSize; i++)
     {
-        if (saveStudent(studentsFile, students[i]) == -1)
+        if (saveStudent(studentsFile, studentsList->students[i]) == -1)
         {
             return -1;
         }
     }
 
-    for (int i = 0; i < numOfTeachers; i++)
+    for (int i = 0; i < teachersList->currentSize; i++)
     {
-        if (saveTeacher(teachersFile, teachers[i]) == -1)
+        if (saveTeacher(teachersFile, teachersList->teachers[i]) == -1)
         {
             return -1;
         }

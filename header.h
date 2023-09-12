@@ -53,6 +53,6 @@ int teacherExists2(TeachersList *list, char *teacher);
 
 int teacherExistsForSubject2(TeachersList *list, char *subject);
 
-int save(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers);
+int save(StudentsList *studentsList, TeachersList *teachersList);
 
-int readTeachers();
+int readTeachers(TeachersList *list);
