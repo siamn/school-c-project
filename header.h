@@ -3,7 +3,7 @@
 
 typedef struct
 {
-    char *subj_name;
+    char *name;
     float grade;
 } Subject;
 

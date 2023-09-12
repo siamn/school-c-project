@@ -93,7 +93,7 @@ int saveStudent(FILE *file, Student *student)
         // print each subject for the student at the end
         // (after the first two fields, name and subject count) consecutively
         Subject subject = student->subjects[i];
-        fprintf(file, "\"%s\",%0.2f", subject.subj_name, subject.grade);
+        fprintf(file, "\"%s\",%0.2f", subject.name, subject.grade);
 
         if (i < student->subjectCount - 1)
         {
@@ -109,5 +109,5 @@ int saveStudent(FILE *file, Student *student)
 int saveTeacher(FILE *file, Teacher *teacher)
 {
     // fprintf returns a negative value if an error occurs
-    return fprintf(file, "\"%s\",\"%s\"\n", teacher->name, teacher->subject.subj_name);
+    return fprintf(file, "\"%s\",\"%s\"\n", teacher->name, teacher->subject.name);
 }
