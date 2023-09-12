@@ -9,8 +9,9 @@
     Continuation of James Tam's School C Project by Siam Islam
 */
 
-#define DEFAULT_STUDENTS_ARRAY_SIZE 100
+#define DEFAULT_STUDENTS_ARRAY_SIZE 2
 #define DEFAULT_TEACHERS_ARRAY_SIZE 20
+#define DEFAULT_SUBJECTS_ARRAY_SIZE 20
 
 const int QUIT = 0;
 
@@ -25,10 +26,9 @@ another math subject is added rather than replacing the existing math subject */
 Student **allocate_structs_stud(void)
 {
     printf("Allocating memory for struct array. \n");
+    int size = DEFAULT_STUDENTS_ARRAY_SIZE;
 
-    const int NUM_OF_STUDENTS = 100;
-
-    Student **students = (Student **)malloc(sizeof(Student *) * NUM_OF_STUDENTS);
+    Student **students = (Student **)malloc(sizeof(Student *) * size);
 
     if (students == NULL)
     {
@@ -36,19 +36,13 @@ Student **allocate_structs_stud(void)
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < NUM_OF_STUDENTS; i++)
+    for (int i = 0; i < size; i++)
     {
         students[i] = (Student *)malloc(sizeof(Student));
-        students[i]->subjects = (Subject *)malloc(sizeof(Subject) * 10); // allocate space using malloc() for student subjects;
 
         if (students[i] == NULL)
         {
             perror("Error allocating memory for single struct");
-            exit(EXIT_FAILURE);
-        }
-        if (students[i]->subjects == NULL)
-        {
-            perror("Error allocating memory for subject pointer");
             exit(EXIT_FAILURE);
         }
     }
@@ -133,22 +127,53 @@ int exists_teacher_for_subject(Teacher **teachers, int numOfTeachers, char *subj
     return -1;
 }
 
-int add_student(Student **students, char *studentName, int numOfTeachers)
+int expandStudentsStruct(Student ***students, int currentSize, int maxSize)
 {
-    int index = numOfTeachers;
+    int newMaxSize = maxSize;
+    if (currentSize >= 0.5 * maxSize)
+    {
+        printf("here\n");
+
+        newMaxSize = maxSize * 2;
+        printf("Before realloc: %p\n", students);
+        Student **newStudents = realloc(*students, newMaxSize * sizeof(Student *));
+        if (newStudents == NULL)
+        {
+            perror("Unable to realloc memory.\n");
+            return -1;
+        }
+        *students = newStudents;
+        printf("After realloc: %p\n", students);
+        for (int i = currentSize; i < newMaxSize; i++)
+        {
+            (*students)[i] = (Student *)malloc(sizeof(Student));
+
+            if ((*students)[i] == NULL)
+            {
+                perror("Error allocating memory for single struct");
+                return -1;
+            }
+        }
+        return newMaxSize;
+    }
+    return maxSize;
+}
+
+int add_student(Student **students, char *studentName, int numOfStudents)
+{
+    int index = numOfStudents;
     printf("Adding student %s \n", studentName);
 
-    char *ptr = (char *)malloc(sizeof(char) * 20);
-    ptr = studentName;
-    strcpy((*(students + index))->stud_name, studentName);
+    students[index]->stud_name = studentName;
 
-    for (int i = 0; i < sizeof(students); i++)
+    students[index]->subjects = (Subject *)malloc(sizeof(Subject) * DEFAULT_SUBJECTS_ARRAY_SIZE); // allocate space using malloc() for student subjects;
+    if (students[index]->subjects == NULL)
     {
-        printf("The students array now looks like: %s \n", students[i]->stud_name);
+        perror("Error allocating memory for subject pointer");
+        return -1;
     }
-
     // initialise the subjects that this particular student studies to 0
-    (*(students + index))->subject_count = 0;
+    students[index]->subject_count = 0;
 
     index++;
 
@@ -549,7 +574,7 @@ int main(void)
 
     int totalStudents = 0;
     int totalTeachers = 0;
-
+    int maxStudentsArraySize = DEFAULT_STUDENTS_ARRAY_SIZE;
     int option;
 
     totalTeachers = readTeachers(teachers);
@@ -569,8 +594,12 @@ int main(void)
         switch (option)
         {
         case 1:
+            maxStudentsArraySize = expandStudentsStruct(&students, totalStudents, maxStudentsArraySize);
             totalStudents = option_1(students, totalStudents);
-            ;
+            if (totalStudents == -1)
+            {
+                return -1;
+            }
             break;
         case 2:
             option_2(students, totalStudents);

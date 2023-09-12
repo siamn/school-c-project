@@ -15,7 +15,7 @@ typedef struct
 
 typedef struct
 {
-    char stud_name[50];
+    char *stud_name;
     int subject_count;
     Subject *subjects;
 } Student;
