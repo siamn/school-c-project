@@ -778,6 +778,8 @@ int main(void)
     userAddSubjectToExistingStudent2(list);
     displayStudents3(list);
 
+    userFindStudentsForSubject2(list);
+
     // while (option != QUIT)
     // {
     //     displayMenuOptions();

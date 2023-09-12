@@ -39,6 +39,8 @@ extern Teacher **teachers;
 
 int studentExists2(StudentsList *list, char *studentName);
 
+int subjectExistsForStudent(Student *student, char *subject);
+
 void addSubject2(StudentsList *list, char *studentName, char *subjectName, float gradeInput);
 
 int addStudent2(StudentsList *studentsList, char *studentName);

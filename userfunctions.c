@@ -90,3 +90,29 @@ void userAddSubjectToExistingStudent2(StudentsList *list)
 
     userAddSubject2(list, studentName);
 }
+
+void userFindStudentsForSubject2(StudentsList *list)
+{
+    printf("Please enter the name of the subject you want to find a list of students for: \n");
+    char *subject = getLimitedLine(20);
+    if (list->currentSize < 1)
+    {
+        printf("No students registered.");
+        return;
+    }
+    printf("Students studying %s:\n", subject);
+    int studentsStudyingSubject = 0;
+    for (int i = 0; i < list->currentSize; i++)
+    {
+        Student *student = list->students[i];
+        if (subjectExistsForStudent(student, subject) >= 0)
+        {
+            printf("%s\n", student->name);
+            studentsStudyingSubject += 1;
+        }
+    }
+    if (studentsStudyingSubject < 1)
+    {
+        printf("No registered student is currently studying this subject.\n");
+    }
+}
