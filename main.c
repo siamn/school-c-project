@@ -100,6 +100,18 @@ int studentExists(char *studentName, int numOfStudents)
     return -1;
 }
 
+int studentExists2(StudentsList *list, char *studentName)
+{
+    for (int i = 0; i < list->currentSize; i++)
+    {
+        if (strcmp(list->students[i]->name, studentName) == 0)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
 int subjectExistsForStudent(Student *student, char *subject)
 {
     for (int i = 0; i < student->subjectCount; i++)
@@ -279,6 +291,39 @@ void addSubject(char *studentName, char *subjectName, float gradeInput)
 
             (*(students + i))->subjectCount++;
             break;
+        }
+    }
+
+    printf("\nSuccessfully added subject %s with grade %0.2f for student '%s' to the school database system 😄  \n\n", subjectName, gradeInput, studentName);
+}
+
+void addSubject2(StudentsList *list, char *studentName, char *subjectName, float gradeInput)
+{
+    printf("Inside addSubject,  student name: %s \n", studentName);
+
+    int studentIndex = studentExists2(list, studentName);
+    if (studentIndex >= 0)
+    {
+        int subjectIndex = subjectExistsForStudent(list->students[studentIndex], subjectName);
+        if (subjectIndex == -1) // subject does not already exist, so add a new subject
+        {
+            int count = list->students[studentIndex]->subjectCount;
+            if (count < DEFAULT_SUBJECTS_ARRAY_SIZE)
+            {
+                Subject *subjects = list->students[studentIndex]->subjects;
+                subjects[count].name = subjectName;
+                subjects[count].grade = gradeInput;
+                list->students[studentIndex]->subjectCount++;
+            }
+            else
+            {
+                printf("Max amount of subjects for this student has been reached.\n");
+                return;
+            }
+        }
+        else
+        {
+            printf("Subject already exists for this student.\n");
         }
     }
 
@@ -641,6 +686,28 @@ void displayStudents(int numOfStudents)
     }
 }
 
+void displayStudents3(StudentsList *list)
+{
+    int response = getYesNoResponse("Would you like to also display the students' subjects and grades? (y/n): \n");
+    printf("Students: \n");
+    if (list->currentSize < 1)
+    {
+        printf("No registed students.\n");
+        return;
+    }
+    for (int i = 0; i < list->currentSize; i++)
+    {
+        if (response > 0)
+        {
+            displaySubject(list->students[i]);
+        }
+        else
+        {
+            printf("%s\n", list->students[i]->name);
+        }
+    }
+}
+
 void userFindStudentsForTeacher(int numOfStudents, int numOfTeachers)
 {
     printf("Please enter the name of the teacher you want to find students for: \n");
@@ -708,6 +775,8 @@ int main(void)
     displayStudents2(list);
     addStudent2(list, "Smithx");
     displayStudents2(list);
+    addSubject2(list, "Siam", "Science", 100.00);
+    displayStudents3(list);
     // while (option != QUIT)
     // {
     //     displayMenuOptions();
