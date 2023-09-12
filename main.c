@@ -385,7 +385,7 @@ void userAddSubjectToExistingStudent(int numOfStudents)
     userAddSubject(studentName);
 }
 
-int option_3(Teacher **teachers, int totalTeachers)
+int userAddNewTeachers(Teacher **teachers, int totalTeachers)
 {
     int numOfTeachers;
 
@@ -420,7 +420,7 @@ int option_3(Teacher **teachers, int totalTeachers)
     return totalTeachers;
 }
 
-void option_5(int numOfStudents)
+void userFindStudentsForSubject(int numOfStudents)
 {
     printf("Please enter the name of the subject you want to find a list of students for: \n");
     char *subject = getLimitedLine(20);
@@ -446,7 +446,7 @@ void option_5(int numOfStudents)
     }
 }
 
-void option_6(Teacher **teachers, int numOfTeachers)
+void userFindTeacherForSubject(Teacher **teachers, int numOfTeachers)
 {
     printf("Please enter the name of the subject you want to find the teacher for: \n");
     char *subject = getLimitedLine(20);
@@ -468,7 +468,7 @@ void option_6(Teacher **teachers, int numOfTeachers)
     }
 }
 
-void option_7(int numOfStudents)
+void userFindGradesForStudent(int numOfStudents)
 {
     printf("Please enter the name of the student you want to find grades for: \n");
     char *name = getLimitedLine(20);
@@ -496,7 +496,7 @@ void option_7(int numOfStudents)
     }
 }
 
-void option_8(int numOfStudents, Teacher **teachers, int numOfTeachers)
+void userFindTeachersForStudent(int numOfStudents, Teacher **teachers, int numOfTeachers)
 {
     printf("Please enter the name of the student you want to find teachers for: \n");
     char *name = getLimitedLine(20);
@@ -557,7 +557,7 @@ void displayStudents(int numOfStudents)
     }
 }
 
-void option_9(int numOfStudents, Teacher **teachers, int numOfTeachers)
+void userFindStudentsForTeacher(int numOfStudents, Teacher **teachers, int numOfTeachers)
 {
     printf("Please enter the name of the teacher you want to find students for: \n");
     char *name = getLimitedLine(20);
@@ -629,7 +629,7 @@ int main(void)
             userAddSubjectToExistingStudent(totalStudents);
             break;
         case 3:
-            totalTeachers = option_3(teachers, totalTeachers);
+            totalTeachers = userAddNewTeachers(teachers, totalTeachers);
             break;
         case 4:
             printf("Not implemented. Sorry.\n");
@@ -638,21 +638,21 @@ int main(void)
             printf("Total number of students: %d \n", totalStudents);
             printStudents(totalStudents);
             printf("Actual: \n\n");
-            option_5(totalStudents);
+            userFindStudentsForSubject(totalStudents);
             break;
         case 6:
             printTeachers(teachers, totalTeachers);
             printf("Actual: \n\n");
-            option_6(teachers, totalTeachers);
+            userFindTeacherForSubject(teachers, totalTeachers);
             break;
         case 7:
-            option_7(totalStudents);
+            userFindGradesForStudent(totalStudents);
             break;
         case 8:
-            option_8(totalStudents, teachers, totalTeachers);
+            userFindTeachersForStudent(totalStudents, teachers, totalTeachers);
             break;
         case 9:
-            option_9(totalStudents, teachers, totalTeachers);
+            userFindStudentsForTeacher(totalStudents, teachers, totalTeachers);
             break;
         case 10:
             displayStudents(totalStudents);
