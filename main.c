@@ -286,7 +286,7 @@ void displayStudentNames(StudentsList *list)
 
 void displayTeachers(TeachersList *list)
 {
-    printf("Teachers:\n");
+    printf("\nTeachers:\n");
     Teacher **teachers = list->teachers;
     for (int i = 0; i < list->currentSize; i++)
     {
@@ -369,6 +369,45 @@ void displaySubject(Student *student)
     printf("\n");
 }
 
+void freeStudentsList(StudentsList *list)
+{
+    for (int i = 0; i < list->maxSize; i++)
+    {
+        // if not NULL, then memory for subjects was allocated successfully
+        // so this must also be freed
+        if (list->students[i]->subjects != NULL)
+        {
+            for (int j = 0; j < DEFAULT_SUBJECTS_ARRAY_SIZE; j++)
+            {
+                free(list->students[i]->subjects[j].name);
+            }
+            free(list->students[i]->subjects);
+        }
+        free(list->students[i]->name);
+        free(list->students[i]);
+    }
+    free(list->students);
+    free(list);
+}
+
+void freeTeachersList(TeachersList *list)
+{
+    for (int i = 0; i < list->maxSize; i++)
+    {
+        free(list->teachers[i]->name);
+        free(list->teachers[i]->subject.name);
+        free(list->teachers[i]);
+    }
+    free(list->teachers);
+    free(list);
+}
+
+void freeMemory(StudentsList *studentsList, TeachersList *teachersList)
+{
+    freeTeachersList(teachersList);
+    freeStudentsList(studentsList);
+}
+
 int main(void)
 {
 
@@ -418,10 +457,7 @@ int main(void)
         switch (option)
         {
         case 1:
-            if (userAddNewStudents(studentsList) == -1)
-            {
-                return -1;
-            }
+            userAddNewStudents(studentsList);
             break;
         case 2:
             userAddSubjectToExistingStudent(studentsList);
@@ -430,8 +466,6 @@ int main(void)
             userAddNewTeachers(teachersList);
             break;
         case 4:
-            printf("Not implemented. Sorry.\n");
-            printf("Printing teachers instead.\n");
             displayTeachers(teachersList);
             break;
         case 5:
@@ -470,7 +504,8 @@ int main(void)
         }
     }
 
-    // TODO: FREE MEMORY HERE
+    // FREE MEMORY HERE
+    freeMemory(studentsList, teachersList);
 
     return 0;
 
