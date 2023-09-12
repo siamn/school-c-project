@@ -116,3 +116,31 @@ void userFindStudentsForSubject2(StudentsList *list)
         printf("No registered student is currently studying this subject.\n");
     }
 }
+
+void userFindGradesForStudent2(StudentsList *list)
+{
+    printf("Please enter the name of the student you want to find grades for: \n");
+    char *name = getLimitedLine(20);
+    printf("Please enter the name of the subject you want to find the student's grades for: \n");
+    char *subject = getLimitedLine(20);
+    int studentIndex = studentExists2(list, name);
+    if (studentIndex >= 0)
+    {
+        Student *student = list->students[studentIndex];
+        int subjectIndex = subjectExistsForStudent(student, subject);
+        if (subjectIndex >= 0)
+        {
+            printf("%s's grade for subject %s: %0.2f\n", student->name,
+                   student->subjects[subjectIndex].name,
+                   student->subjects[subjectIndex].grade);
+        }
+        else
+        {
+            printf("Could not find subject %s for this student.\n", subject);
+        }
+    }
+    else
+    {
+        printf("Could not find this student %s in our database.\n", name);
+    }
+}
