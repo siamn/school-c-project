@@ -10,7 +10,7 @@
 */
 
 #define DEFAULT_STUDENTS_ARRAY_SIZE 2
-#define DEFAULT_TEACHERS_ARRAY_SIZE 20
+#define DEFAULT_TEACHERS_ARRAY_SIZE 10
 #define DEFAULT_SUBJECTS_ARRAY_SIZE 20
 
 const int QUIT = 0;
@@ -160,6 +160,40 @@ int expandStudentsStruct(Student ***students, int currentSize, int maxSize)
     return maxSize;
 }
 
+int expandTeachersStruct(Teacher ***teachers, int currentSize, int maxSize)
+{
+    int newMaxSize = maxSize;
+    if (currentSize >= 0.5 * maxSize)
+    {
+        newMaxSize = maxSize * 2;
+
+        printf("Before realloc: %p\n", teachers);
+
+        Teacher **newTeachers = realloc(*teachers, newMaxSize * sizeof(Teacher *));
+        if (newTeachers == NULL)
+        {
+            perror("Unable to reallocate memory.\n");
+            return -1;
+        }
+        *teachers = newTeachers;
+
+        printf("After realloc: %p\n", teachers);
+
+        for (int i = currentSize; i < newMaxSize; i++)
+        {
+            (*teachers)[i] = malloc(sizeof(Teacher));
+
+            if ((*teachers)[i] == NULL)
+            {
+                perror("Error allocating memory for single struct");
+                return -1;
+            }
+        }
+        return newMaxSize;
+    }
+    return maxSize;
+}
+
 int addStudent(char *studentName, int numOfStudents)
 {
     static int maxArraySize = DEFAULT_STUDENTS_ARRAY_SIZE;
@@ -212,8 +246,10 @@ void addSubject(char *studentName, char *subjectName, float gradeInput)
 
 int addTeacher(char *teacherName, char *subjectName, int numOfTeachers)
 {
+    static int maxArraySize = DEFAULT_TEACHERS_ARRAY_SIZE;
     int index = numOfTeachers;
     printf("Adding teacher %s \n", teacherName);
+    maxArraySize = expandTeachersStruct(&teachers, numOfTeachers, maxArraySize);
 
     teachers[index]->name = teacherName;
     teachers[index]->subject.name = subjectName;
