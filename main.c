@@ -56,9 +56,9 @@ Teacher **allocate_structs_teach(void)
 {
     printf("Allocating memory for teacher struct array. \n");
 
-    const int NUM_OF_TEACHERS = 20;
+    const int size = DEFAULT_TEACHERS_ARRAY_SIZE;
 
-    Teacher **teachers = (Teacher **)malloc(sizeof(Teacher *) * NUM_OF_TEACHERS);
+    Teacher **teachers = (Teacher **)malloc(sizeof(Teacher *) * size);
 
     if (teachers == NULL)
     {
@@ -66,7 +66,7 @@ Teacher **allocate_structs_teach(void)
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < NUM_OF_TEACHERS; i++)
+    for (int i = 0; i < size; i++)
     {
         teachers[i] = (Teacher *)malloc(sizeof(Teacher));
 
@@ -207,9 +207,6 @@ void add_subject(char *studentName, char *subjectName, float gradeInput)
     }
 
     printf("\nSuccessfully added subject %s with grade %0.2f for student '%s' to the school database system 😄  \n\n", subjectName, gradeInput, studentName);
-    // for (int i = 0; i < sizeof(students); i++) {
-    //     printf("The students array now looks like: %s \n", students[i]->stud_name);
-    // }
 }
 
 int add_teacher(Teacher **teachers, char *teacherName, char *subjectName, int numOfTeachers)
@@ -222,11 +219,6 @@ int add_teacher(Teacher **teachers, char *teacherName, char *subjectName, int nu
 
     strcpy((*(teachers + index))->teacher_name, teacherName);
     (*(teachers + index))->subject.subj_name = subjectName;
-
-    for (int i = 0; i < sizeof(teachers); i++)
-    {
-        printf("The teachers array now looks like: %s \n", teachers[i]->teacher_name);
-    }
 
     index++;
 
@@ -289,6 +281,7 @@ void main_menu()
     printf("7). List the grades a particular student has achieved in a subject \n");
     printf("8). List the teachers teaching a particular student \n");
     printf("9). List the students taught by a particular teacher \n");
+    printf("10). List the students taught at this school and optionally their subjects and grades. \n");
     printf("0). EXIT \n");
     printf("------------------------------------ \n");
 }
@@ -534,6 +527,38 @@ void option_8(int numOfStudents, Teacher **teachers, int numOfTeachers)
     }
 }
 
+void displaySubject(Student *student)
+{
+    printf("Student: %s\n", student->stud_name);
+    if (student->subject_count < 1)
+    {
+        printf("No registered subject for this student.\n\n");
+        return;
+    }
+    for (int i = 0; i < student->subject_count; i++)
+    {
+        Subject subject = student->subjects[i];
+        printf("Studies %s with grade: %0.2f\n", subject.subj_name, subject.grade);
+    }
+    printf("\n");
+}
+
+void displayStudents(int numOfStudents)
+{
+    int response = getYesNoResponse("Would you like to also display the students' subjects and grades? (y/n): \n");
+    for (int i = 0; i < numOfStudents; i++)
+    {
+        if (response > 0)
+        {
+            displaySubject(students[i]);
+        }
+        else
+        {
+            printf("%s\n", students[i]->stud_name);
+        }
+    }
+}
+
 void option_9(int numOfStudents, Teacher **teachers, int numOfTeachers)
 {
     printf("Please enter the name of the teacher you want to find students for: \n");
@@ -631,6 +656,9 @@ int main(void)
         case 9:
             option_9(totalStudents, teachers, totalTeachers);
             break;
+        case 10:
+            displayStudents(totalStudents);
+            break;
         case 0:
             printf("Attempting save...\n");
             if (save(students, totalStudents, teachers, totalTeachers) == 1)
@@ -640,7 +668,7 @@ int main(void)
             printf("Exiting program.\n");
             break;
         default:
-            printf("Please enter a valid number from 0 - 9!");
+            printf("Please enter a valid number from 0 - 10!");
             break;
         }
     }
