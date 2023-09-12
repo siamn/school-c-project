@@ -17,3 +17,5 @@ void userFindGradesForStudent2(StudentsList *list);
 void userFindTeachersForStudent2(StudentsList *studentsList, TeachersList *teachersList);
 
 void userFindStudentsForTeacher2(StudentsList *studentsList, TeachersList *teachersList);
+
+void userDisplayStudents(StudentsList *list);

@@ -50,6 +50,8 @@ int teacherExists2(TeachersList *list, char *teacher);
 
 int teacherExistsForSubject2(TeachersList *list, char *subject);
 
+void displaySubject(Student *student);
+
 int save(StudentsList *studentsList, TeachersList *teachersList);
 
 int readTeachers(TeachersList *list);

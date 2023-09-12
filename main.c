@@ -320,28 +320,6 @@ void displaySubject(Student *student)
     printf("\n");
 }
 
-void userDisplayStudents(StudentsList *list)
-{
-    int response = getYesNoResponse("Would you like to also display the students' subjects and grades? (y/n): \n");
-    printf("Students: \n");
-    if (list->currentSize < 1)
-    {
-        printf("No registed students.\n");
-        return;
-    }
-    for (int i = 0; i < list->currentSize; i++)
-    {
-        if (response > 0)
-        {
-            displaySubject(list->students[i]);
-        }
-        else
-        {
-            printf("%s\n", list->students[i]->name);
-        }
-    }
-}
-
 int main(void)
 {
 
