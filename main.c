@@ -19,14 +19,6 @@
 
 const int QUIT = 0;
 
-// check if you can still access unallocated memory when adding students
-// e.g. if num students set to 1, can still add more students and print them out.
-
-/* TODO: Can currently add duplicate subjects
-e.g. add student with subject Math with no grade using option 1
-then use option 2 to add grade for same subject by typing Math for same student
-another math subject is added rather than replacing the existing math subject */
-
 Student **allocateStudentsStructs(void)
 {
     printf("Allocating memory for struct array. \n");
