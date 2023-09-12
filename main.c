@@ -840,6 +840,9 @@ int main(void)
     displayTeachers(teachersList);
 
     userFindTeacherForSubject2(teachersList);
+
+    userFindTeachersForStudent2(studentsList, teachersList);
+    userFindStudentsForTeacher2(studentsList, teachersList);
     // userAddNewStudents2(list);
     // displayStudents3(list);
 

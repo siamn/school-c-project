@@ -207,3 +207,64 @@ void userFindTeacherForSubject2(TeachersList *list)
         printf("No teacher is currently teacher this subject.\n");
     }
 }
+
+void userFindTeachersForStudent2(StudentsList *studentsList, TeachersList *teachersList)
+{
+    printf("Please enter the name of the student you want to find teachers for: \n");
+    char *name = getLimitedLine(20);
+    int studentIndex = studentExists2(studentsList, name);
+    if (studentIndex >= 0)
+    {
+        Student *student = studentsList->students[studentIndex];
+        printf("Teachers teaching %s:\n", student->name);
+        for (int i = 0; i < student->subjectCount; i++)
+        {
+            int teacherIndex = teacherExistsForSubject2(teachersList, student->subjects[i].name);
+            if (teacherIndex >= 0)
+            {
+                Teacher *teacher = teachersList->teachers[teacherIndex];
+                printf("%s teaches %s\n", teacher->name, student->subjects[i].name);
+            }
+            else
+            {
+                printf("No teacher found for subject %s\n", student->subjects[i].name);
+            }
+        }
+    }
+    else
+    {
+        printf("Could not find this student %s in our database.\n", name);
+    }
+}
+
+void userFindStudentsForTeacher2(StudentsList *studentsList, TeachersList *teachersList)
+{
+    printf("Please enter the name of the teacher you want to find students for: \n");
+    char *name = getLimitedLine(20);
+    int teacherIndex = teacherExists2(teachersList, name);
+    int count = 0;
+    if (teacherIndex >= 0)
+    {
+        Teacher *teacher = teachersList->teachers[teacherIndex];
+        printf("Students taught by teacher %s:\n", teacher->name);
+        char *subject = teacher->subject.name;
+        for (int i = 0; i < studentsList->currentSize; i++)
+        {
+            Student *student = studentsList->students[i];
+            int studentIndex = subjectExistsForStudent(student, subject);
+            if (studentIndex >= 0)
+            {
+                printf("%s\n", student->name);
+                count++;
+            }
+        }
+        if (count < 1)
+        {
+            printf("No students found.\n");
+        }
+    }
+    else
+    {
+        printf("Could not find this teacher %s in our database.\n", name);
+    }
+}
