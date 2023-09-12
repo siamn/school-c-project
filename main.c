@@ -9,6 +9,9 @@
     Continuation of James Tam's School C Project by Siam Islam
 */
 
+#define DEFAULT_STUDENTS_ARRAY_SIZE 100
+#define DEFAULT_TEACHERS_ARRAY_SIZE 20
+
 const int QUIT = 0;
 
 // check if you can still access unallocated memory when adding students
@@ -130,9 +133,9 @@ int exists_teacher_for_subject(Teacher **teachers, int numOfTeachers, char *subj
     return -1;
 }
 
-int add_student(Student **students, char *studentName)
+int add_student(Student **students, char *studentName, int numOfTeachers)
 {
-    static int index = 0;
+    int index = numOfTeachers;
     printf("Adding student %s \n", studentName);
 
     char *ptr = (char *)malloc(sizeof(char) * 20);
@@ -182,9 +185,9 @@ void add_subject(Student **students, char *studentName, char *subjectName, float
     // }
 }
 
-int add_teacher(Teacher **teachers, char *teacherName, char *subjectName)
+int add_teacher(Teacher **teachers, char *teacherName, char *subjectName, int numOfTeachers)
 {
-    static int index = 0;
+    int index = numOfTeachers;
     printf("Adding teacher %s \n", teacherName);
 
     char *ptr = (char *)malloc(sizeof(char) * 20);
@@ -338,7 +341,7 @@ int option_1(Student **students, int totalStudents)
             return totalStudents;
         }
 
-        totalStudents = add_student(students, studentName);
+        totalStudents = add_student(students, studentName, totalStudents);
 
         user_add_subject(students, studentName);
     }
@@ -382,7 +385,18 @@ int option_3(Teacher **teachers, int totalTeachers)
         printf("Please enter the subject name (1 subject allowed): \n");
         subjectName = getLimitedLine(20);
 
-        totalTeachers = add_teacher(teachers, teacherName, subjectName);
+        if (exists_teacher(teachers, totalTeachers, teacherName) >= 0)
+        {
+            printf("\nThe teacher '%s' exists in the system already!  Exiting back to main menu ... \n", teacherName);
+            return totalTeachers;
+        }
+        else if (exists_teacher_for_subject(teachers, totalTeachers, subjectName) >= 0)
+        {
+            printf("\nA teacher already exists in the system for the subject '%s'.\nExiting back to main menu ... \n", subjectName);
+            return totalTeachers;
+        }
+
+        totalTeachers = add_teacher(teachers, teacherName, subjectName, totalTeachers);
     }
 
     return totalTeachers;

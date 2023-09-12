@@ -20,7 +20,7 @@ typedef struct
     Subject *subjects;
 } Student;
 
-int add_teacher(Teacher **teachers, char *teacherName, char *subjectName);
+int add_teacher(Teacher **teachers, char *teacherName, char *subjectName, int numOfTeachers);
 
 char *getLine();
 

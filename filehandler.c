@@ -38,7 +38,7 @@ int readTeachers(Teacher **teachers)
         // printf("Loop 2\n");
         if (parsedFields == teacherFields)
         {
-            numOfTeachers = add_teacher(teachers, teacherName, subjectName);
+            numOfTeachers = add_teacher(teachers, teacherName, subjectName, numOfTeachers);
         }
         else
         {
