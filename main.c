@@ -328,6 +328,7 @@ void addSubject(StudentsList *list, char *studentName, char *subjectName, float 
         else
         {
             printf("Subject already exists for this student.\n");
+            return;
         }
     }
 
