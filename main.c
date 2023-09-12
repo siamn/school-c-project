@@ -787,19 +787,15 @@ void userFindStudentsForTeacher(int numOfStudents, int numOfTeachers)
 
 int main(void)
 {
-    // initialize requried variables
-    int totalStudents = 0;
-    int totalTeachers = 0;
-    int maxStudentsArraySize = DEFAULT_STUDENTS_ARRAY_SIZE;
+
     int option = -1;
 
     // allocate initial arrays of pointers to student/teachers structs
     students = allocateStudentsStructs();
     teachers = allocateTeachersStructs();
 
-    // load teachers from file
-    // totalTeachers = readTeachers();
-    printf("Number of teachers read from file: %d\n", totalTeachers);
+    Student **students2 = allocateStudentsStructs();
+    Teacher **teachers2 = allocateTeachersStructs();
 
     StudentsList *studentsList = malloc(sizeof(StudentsList) * 1);
     if (studentsList == NULL)
@@ -815,38 +811,36 @@ int main(void)
         return -1;
     }
 
-    studentsList->students = students;
+    studentsList->students = students2;
     studentsList->currentSize = 0;
     studentsList->maxSize = DEFAULT_STUDENTS_ARRAY_SIZE;
 
-    teachersList->teachers = teachers;
+    teachersList->teachers = teachers2;
     teachersList->currentSize = 0;
     teachersList->maxSize = DEFAULT_TEACHERS_ARRAY_SIZE;
 
-    readTeachers(teachersList);
+    // addStudent2(studentsList, "Siam");
+    // displayStudents2(studentsList);
+    // addStudent2(studentsList, "Tom");
+    // displayStudents2(studentsList);
+    // addStudent2(studentsList, "Smith");
+    // displayStudents2(studentsList);
+    // addStudent2(studentsList, "Smithx");
+    // displayStudents2(studentsList);
+    // addSubject2(studentsList, "Siam", "Science", 100.00);
+    // displayStudents3(studentsList);
 
-    addStudent2(studentsList, "Siam");
-    displayStudents2(studentsList);
-    addStudent2(studentsList, "Tom");
-    displayStudents2(studentsList);
-    addStudent2(studentsList, "Smith");
-    displayStudents2(studentsList);
-    addStudent2(studentsList, "Smithx");
-    displayStudents2(studentsList);
-    addSubject2(studentsList, "Siam", "Science", 100.00);
-    displayStudents3(studentsList);
+    // userFindGradesForStudent2(studentsList);
 
-    userFindGradesForStudent2(studentsList);
+    // userAddNewTeachers2(teachersList);
+    // displayTeachers(teachersList);
 
-    userAddNewTeachers2(teachersList);
-    displayTeachers(teachersList);
+    // userFindTeacherForSubject2(teachersList);
 
-    userFindTeacherForSubject2(teachersList);
+    // userFindTeachersForStudent2(studentsList, teachersList);
+    // userFindStudentsForTeacher2(studentsList, teachersList);
 
-    userFindTeachersForStudent2(studentsList, teachersList);
-    userFindStudentsForTeacher2(studentsList, teachersList);
-
-    save(studentsList, teachersList);
+    // save(studentsList, teachersList);
     // userAddNewStudents2(list);
     // displayStudents3(list);
 
@@ -855,72 +849,78 @@ int main(void)
 
     // userFindStudentsForSubject2(list);
 
-    // while (option != QUIT)
-    // {
-    //     displayMenuOptions();
+    readTeachers(teachersList);
+    printf("Number of teachers read from file: %d\n", teachersList->currentSize);
 
-    //     option = getPositiveInt();
+    while (option != QUIT)
+    {
+        displayMenuOptions();
 
-    //     if (option < 0)
-    //     {
-    //         printf("Your provided input is not valid. Please try again.");
-    //         continue;
-    //     }
+        option = getPositiveInt();
 
-    //     switch (option)
-    //     {
-    //     case 1:
-    //         totalStudents = userAddNewStudents(totalStudents);
-    //         if (totalStudents == -1)
-    //         {
-    //             return -1;
-    //         }
-    //         break;
-    //     case 2:
-    //         userAddSubjectToExistingStudent(totalStudents);
-    //         break;
-    //     case 3:
-    //         totalTeachers = userAddNewTeachers(totalTeachers);
-    //         break;
-    //     case 4:
-    //         printf("Not implemented. Sorry.\n");
-    //         break;
-    //     case 5:
-    //         printf("Total number of students: %d \n", totalStudents);
-    //         printStudents(totalStudents);
-    //         printf("Actual: \n\n");
-    //         userFindStudentsForSubject(totalStudents);
-    //         break;
-    //     case 6:
-    //         printTeachers(totalTeachers);
-    //         printf("Actual: \n\n");
-    //         userFindTeacherForSubject(totalTeachers);
-    //         break;
-    //     case 7:
-    //         userFindGradesForStudent(totalStudents);
-    //         break;
-    //     case 8:
-    //         userFindTeachersForStudent(totalStudents, totalTeachers);
-    //         break;
-    //     case 9:
-    //         userFindStudentsForTeacher(totalStudents, totalTeachers);
-    //         break;
-    //     case 10:
-    //         displayStudents(totalStudents);
-    //         break;
-    //     case 0:
-    //         printf("Attempting save...\n");
-    //         if (save(students, totalStudents, teachers, totalTeachers) == 1)
-    //         {
-    //             printf("Saved successfully.\n");
-    //         }
-    //         printf("Exiting program.\n");
-    //         break;
-    //     default:
-    //         printf("Please enter a valid number from 0 - 10!");
-    //         break;
-    //     }
-    // }
+        if (option < 0)
+        {
+            printf("Your provided input is not valid. Please try again.");
+            continue;
+        }
+
+        switch (option)
+        {
+        case 1:
+            if (userAddNewStudents2(studentsList) == -1)
+            {
+                return -1;
+            }
+            break;
+        case 2:
+            userAddSubjectToExistingStudent2(studentsList);
+            break;
+        case 3:
+            if (userAddNewTeachers2(teachersList) == -1)
+            {
+                return -1;
+            }
+            break;
+        case 4:
+            printf("Not implemented. Sorry.\n");
+            printf("Printing teachers instead.\n");
+            displayTeachers(teachersList);
+            break;
+        case 5:
+            userFindStudentsForSubject2(studentsList);
+            break;
+        case 6:
+            userFindTeacherForSubject2(teachersList);
+            break;
+        case 7:
+            userFindGradesForStudent2(studentsList);
+            break;
+        case 8:
+            userFindTeachersForStudent2(studentsList, teachersList);
+            break;
+        case 9:
+            userFindStudentsForTeacher2(studentsList, teachersList);
+            break;
+        case 10:
+            displayStudents3(studentsList);
+            break;
+        case 0:
+            printf("Saving...\n");
+            if (save(studentsList, teachersList) == 1)
+            {
+                printf("Saved successfully.\n");
+            }
+            else
+            {
+                printf("Unable to save data.");
+            }
+            printf("Exiting program.\n");
+            break;
+        default:
+            printf("Please enter a valid number from 0 - 10!");
+            break;
+        }
+    }
 
     // TODO: FREE MEMORY HERE
 
