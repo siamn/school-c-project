@@ -79,7 +79,7 @@ Teacher **allocateTeachersStructs(void)
     return (teachers);
 }
 
-int studentExists2(StudentsList *list, char *studentName)
+int studentExists(StudentsList *list, char *studentName)
 {
     for (int i = 0; i < list->currentSize; i++)
     {
@@ -103,7 +103,7 @@ int subjectExistsForStudent(Student *student, char *subject)
     return -1;
 }
 
-int teacherExists2(TeachersList *list, char *teacher)
+int teacherExists(TeachersList *list, char *teacher)
 {
     for (int i = 0; i < list->currentSize; i++)
     {
@@ -115,7 +115,7 @@ int teacherExists2(TeachersList *list, char *teacher)
     return -1;
 }
 
-int teacherExistsForSubject2(TeachersList *list, char *subject)
+int teacherExistsForSubject(TeachersList *list, char *subject)
 {
     for (int i = 0; i < list->currentSize; i++)
     {
@@ -192,7 +192,7 @@ int expandTeachersStruct(Teacher ***teachers, int currentSize, int maxSize)
     return maxSize;
 }
 
-int addStudent2(StudentsList *studentsList, char *studentName)
+int addStudent(StudentsList *studentsList, char *studentName)
 {
     int index = studentsList->currentSize;
     printf("Adding student %s \n", studentName);
@@ -216,7 +216,7 @@ int addStudent2(StudentsList *studentsList, char *studentName)
     return 1;
 }
 
-void addTeacher2(TeachersList *list, char *teacherName, char *subjectName)
+void addTeacher(TeachersList *list, char *teacherName, char *subjectName)
 {
     int index = list->currentSize;
     printf("Adding teacher %s \n", teacherName);
@@ -252,11 +252,11 @@ void displayTeachers(TeachersList *list)
     printf("\n");
 }
 
-void addSubject2(StudentsList *list, char *studentName, char *subjectName, float gradeInput)
+void addSubject(StudentsList *list, char *studentName, char *subjectName, float gradeInput)
 {
     printf("Inside addSubject,  student name: %s \n", studentName);
 
-    int studentIndex = studentExists2(list, studentName);
+    int studentIndex = studentExists(list, studentName);
     if (studentIndex >= 0)
     {
         int subjectIndex = subjectExistsForStudent(list->students[studentIndex], subjectName);
@@ -428,15 +428,15 @@ int main(void)
 
     return 0;
 
-    // addStudent2(studentsList, "Siam");
+    // addStudent(studentsList, "Siam");
     // displayStudentNames(studentsList);
-    // addStudent2(studentsList, "Tom");
+    // addStudent(studentsList, "Tom");
     // displayStudentNames(studentsList);
-    // addStudent2(studentsList, "Smith");
+    // addStudent(studentsList, "Smith");
     // displayStudentNames(studentsList);
-    // addStudent2(studentsList, "Smithx");
+    // addStudent(studentsList, "Smithx");
     // displayStudentNames(studentsList);
-    // addSubject2(studentsList, "Siam", "Science", 100.00);
+    // addSubject(studentsList, "Siam", "Science", 100.00);
     // userDisplayStudents(studentsList);
 
     // userFindGradesForStudent2(studentsList);

@@ -38,7 +38,7 @@ int readTeachers(TeachersList *list)
         // printf("Loop 2\n");
         if (parsedFields == teacherFields)
         {
-            addTeacher2(list, teacherName, subjectName);
+            addTeacher(list, teacherName, subjectName);
             // numOfTeachers = addTeacher(teacherName, subjectName, numOfTeachers);
         }
         else

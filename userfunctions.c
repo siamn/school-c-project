@@ -35,7 +35,7 @@ void userAddSubject2(StudentsList *list, char *studentName)
             // printf("You have entered %s. No grade to be entered. \n", grade_option);
         }
 
-        addSubject2(list, studentName, subjectName, grade);
+        addSubject(list, studentName, subjectName, grade);
     }
     printf("Successfully added all %d subjects for student '%s' \n", numOfSubjects, studentName);
 }
@@ -61,13 +61,13 @@ int userAddNewStudents2(StudentsList *list)
         printf("Please enter each student name, pressing the Enter key for each: \n");
         char *studentName = getLimitedLine(20);
 
-        if (studentExists2(list, studentName) >= 0)
+        if (studentExists(list, studentName) >= 0)
         {
             printf("\nThe student '%s' exists in the system already!  Exiting back to main menu ... \n", studentName);
             return 1;
         }
 
-        addStudent2(list, studentName);
+        addStudent(list, studentName);
 
         userAddSubject2(list, studentName);
     }
@@ -80,7 +80,7 @@ void userAddSubjectToExistingStudent2(StudentsList *list)
     printf("Please enter an existing student to add a subject and/or grade \n");
     char *studentName = getLimitedLine(20);
 
-    if (studentExists2(list, studentName) == -1)
+    if (studentExists(list, studentName) == -1)
     {
         printf("The student '%s' does not exist in the system. Exiting back to main menu ... \n", studentName);
         return;
@@ -123,7 +123,7 @@ void userFindGradesForStudent2(StudentsList *list)
     char *name = getLimitedLine(20);
     printf("Please enter the name of the subject you want to find the student's grades for: \n");
     char *subject = getLimitedLine(20);
-    int studentIndex = studentExists2(list, name);
+    int studentIndex = studentExists(list, name);
     if (studentIndex >= 0)
     {
         Student *student = list->students[studentIndex];
@@ -166,18 +166,18 @@ int userAddNewTeachers2(TeachersList *list)
         printf("Please enter the subject name (1 subject allowed): \n");
         char *subjectName = getLimitedLine(20);
 
-        if (teacherExists2(list, teacherName) >= 0)
+        if (teacherExists(list, teacherName) >= 0)
         {
             printf("\nThe teacher '%s' exists in the system already!  Exiting back to main menu ... \n", teacherName);
             return -1;
         }
-        else if (teacherExistsForSubject2(list, subjectName) >= 0)
+        else if (teacherExistsForSubject(list, subjectName) >= 0)
         {
             printf("\nA teacher already exists in the system for the subject '%s'.\nExiting back to main menu ... \n", subjectName);
             return -1;
         }
 
-        addTeacher2(list, teacherName, subjectName);
+        addTeacher(list, teacherName, subjectName);
     }
 
     return 1;
@@ -212,14 +212,14 @@ void userFindTeachersForStudent2(StudentsList *studentsList, TeachersList *teach
 {
     printf("Please enter the name of the student you want to find teachers for: \n");
     char *name = getLimitedLine(20);
-    int studentIndex = studentExists2(studentsList, name);
+    int studentIndex = studentExists(studentsList, name);
     if (studentIndex >= 0)
     {
         Student *student = studentsList->students[studentIndex];
         printf("Teachers teaching %s:\n", student->name);
         for (int i = 0; i < student->subjectCount; i++)
         {
-            int teacherIndex = teacherExistsForSubject2(teachersList, student->subjects[i].name);
+            int teacherIndex = teacherExistsForSubject(teachersList, student->subjects[i].name);
             if (teacherIndex >= 0)
             {
                 Teacher *teacher = teachersList->teachers[teacherIndex];
@@ -241,7 +241,7 @@ void userFindStudentsForTeacher2(StudentsList *studentsList, TeachersList *teach
 {
     printf("Please enter the name of the teacher you want to find students for: \n");
     char *name = getLimitedLine(20);
-    int teacherIndex = teacherExists2(teachersList, name);
+    int teacherIndex = teacherExists(teachersList, name);
     int count = 0;
     if (teacherIndex >= 0)
     {

@@ -34,21 +34,19 @@ typedef struct
     int maxSize;
 } StudentsList;
 
-int studentExists2(StudentsList *list, char *studentName);
+int studentExists(StudentsList *list, char *studentName);
 
 int subjectExistsForStudent(Student *student, char *subject);
 
-void addSubject2(StudentsList *list, char *studentName, char *subjectName, float gradeInput);
+void addSubject(StudentsList *list, char *studentName, char *subjectName, float gradeInput);
 
-int addStudent2(StudentsList *studentsList, char *studentName);
+int addStudent(StudentsList *studentsList, char *studentName);
 
-int addTeacher(char *teacherName, char *subjectName, int numOfTeachers);
+void addTeacher(TeachersList *list, char *teacherName, char *subjectName);
 
-void addTeacher2(TeachersList *list, char *teacherName, char *subjectName);
+int teacherExists(TeachersList *list, char *teacher);
 
-int teacherExists2(TeachersList *list, char *teacher);
-
-int teacherExistsForSubject2(TeachersList *list, char *subject);
+int teacherExistsForSubject(TeachersList *list, char *subject);
 
 void displaySubject(Student *student);
 
