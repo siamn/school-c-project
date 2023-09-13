@@ -151,7 +151,7 @@ int expandStudentsStruct(Student ***students, int currentSize, int maxSize)
             }
         }
 
-        printf("Before realloc: %p\n", students);
+        // printf("Before realloc: %p\n", students);
         Student **newStudents = realloc(*students, newMaxSize * sizeof(Student *));
         if (newStudents == NULL)
         {
@@ -159,7 +159,7 @@ int expandStudentsStruct(Student ***students, int currentSize, int maxSize)
             return -1;
         }
         *students = newStudents;
-        printf("After realloc: %p\n", students);
+        // printf("After realloc: %p\n", students);
         for (int i = currentSize; i < newMaxSize; i++)
         {
             (*students)[i] = (Student *)malloc(sizeof(Student));
@@ -195,7 +195,7 @@ int expandTeachersStruct(Teacher ***teachers, int currentSize, int maxSize)
             }
         }
 
-        printf("Before realloc: %p\n", teachers);
+        // printf("Before realloc: %p\n", teachers);
 
         Teacher **newTeachers = realloc(*teachers, newMaxSize * sizeof(Teacher *));
         if (newTeachers == NULL)
@@ -205,7 +205,7 @@ int expandTeachersStruct(Teacher ***teachers, int currentSize, int maxSize)
         }
         *teachers = newTeachers;
 
-        printf("After realloc: %p\n", teachers);
+        // printf("After realloc: %p\n", teachers);
 
         for (int i = currentSize; i < newMaxSize; i++)
         {
@@ -295,7 +295,7 @@ int shrinkTeachersStruct(Teacher ***teachers, int currentSize, int maxSize)
             }
         }
 
-        printf("Before realloc: %p\n", teachers);
+        // printf("Before realloc: %p\n", teachers);
 
         // TODO: REMEMBER TO FREE MEMORY AFTER SHRINKING
         // Note: Does realloc auto free memory?
@@ -308,7 +308,7 @@ int shrinkTeachersStruct(Teacher ***teachers, int currentSize, int maxSize)
         }
         *teachers = newTeachers;
 
-        printf("After realloc: %p\n", teachers);
+        // printf("After realloc: %p\n", teachers);
 
         return newMaxSize;
     }
