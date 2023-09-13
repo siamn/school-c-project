@@ -24,7 +24,7 @@ void userAddSubject(StudentsList *list, char *studentName)
         float grade = 0.0;
 
         printf("Please enter the subject name (%d out of %d subjects): ", (i + 1), numOfSubjects);
-        char *subjectName = getLimitedLine(20);
+        char *subjectName = getLimitedLine(MAX_SUBJECT_LENGTH);
 
         int response = getYesNoResponse("Would you like to enter a grade? (Y/N): \n");
 
@@ -60,9 +60,9 @@ int userAddNewStudents(StudentsList *list)
 
     for (int i = 0; i < numOfStudents; i++)
     {
-        // char *studentName = (char *)malloc(sizeof(char) * 20);
+        // char *studentName = (char *)malloc(sizeof(char) * MAX_NAME_LENGTH);
         printf("Please enter each student name, pressing the Enter key for each: \n");
-        char *studentName = getLimitedLine(20);
+        char *studentName = getLimitedLine(MAX_NAME_LENGTH);
 
         if (studentExists(list, studentName) >= 0)
         {
@@ -81,7 +81,7 @@ int userAddNewStudents(StudentsList *list)
 void userAddSubjectToExistingStudent(StudentsList *list)
 {
     printf("Please enter an existing student to add a subject and/or grade \n");
-    char *studentName = getLimitedLine(20);
+    char *studentName = getLimitedLine(MAX_NAME_LENGTH);
 
     if (studentExists(list, studentName) == -1)
     {
@@ -97,7 +97,7 @@ void userAddSubjectToExistingStudent(StudentsList *list)
 void userFindStudentsForSubject(StudentsList *list)
 {
     printf("Please enter the name of the subject you want to find a list of students for: \n");
-    char *subject = getLimitedLine(20);
+    char *subject = getLimitedLine(MAX_SUBJECT_LENGTH);
     if (list->currentSize < 1)
     {
         printf("No students registered.");
@@ -123,9 +123,9 @@ void userFindStudentsForSubject(StudentsList *list)
 void userFindGradesForStudent(StudentsList *list)
 {
     printf("Please enter the name of the student you want to find grades for: \n");
-    char *name = getLimitedLine(20);
+    char *name = getLimitedLine(MAX_NAME_LENGTH);
     printf("Please enter the name of the subject you want to find the student's grades for: \n");
-    char *subject = getLimitedLine(20);
+    char *subject = getLimitedLine(MAX_SUBJECT_LENGTH);
     int studentIndex = studentExists(list, name);
     if (studentIndex >= 0)
     {
@@ -164,10 +164,10 @@ int userAddNewTeachers(TeachersList *list)
     for (int i = 0; i < numOfTeachers; i++)
     {
         printf("Please enter the teacher name (%d out of %d teachers): \n", (i + 1), numOfTeachers);
-        char *teacherName = getLimitedLine(20);
+        char *teacherName = getLimitedLine(MAX_NAME_LENGTH);
 
         printf("Please enter the subject name (1 subject allowed): \n");
-        char *subjectName = getLimitedLine(20);
+        char *subjectName = getLimitedLine(MAX_SUBJECT_LENGTH);
 
         if (teacherExists(list, teacherName) >= 0)
         {
@@ -189,7 +189,7 @@ int userAddNewTeachers(TeachersList *list)
 void userFindTeacherForSubject(TeachersList *list)
 {
     printf("Please enter the name of the subject you want to find the teacher for: \n");
-    char *subject = getLimitedLine(20);
+    char *subject = getLimitedLine(MAX_SUBJECT_LENGTH);
 
     printf("Teacher teaching subject %s:\n", subject);
     int count = 0;
@@ -214,7 +214,7 @@ void userFindTeacherForSubject(TeachersList *list)
 void userFindTeachersForStudent(StudentsList *studentsList, TeachersList *teachersList)
 {
     printf("Please enter the name of the student you want to find teachers for: \n");
-    char *name = getLimitedLine(20);
+    char *name = getLimitedLine(MAX_NAME_LENGTH);
     int studentIndex = studentExists(studentsList, name);
     if (studentIndex >= 0)
     {
@@ -243,7 +243,7 @@ void userFindTeachersForStudent(StudentsList *studentsList, TeachersList *teache
 void userFindStudentsForTeacher(StudentsList *studentsList, TeachersList *teachersList)
 {
     printf("Please enter the name of the teacher you want to find students for: \n");
-    char *name = getLimitedLine(20);
+    char *name = getLimitedLine(MAX_NAME_LENGTH);
     int teacherIndex = teacherExists(teachersList, name);
     int count = 0;
     if (teacherIndex >= 0)

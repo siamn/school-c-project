@@ -32,8 +32,8 @@ int readTeachers(TeachersList *list)
         // printf("Linelen: %zd\n", linelen);
         // printf("'%s'\n", line);
         //("Loop\n");
-        char *teacherName = malloc(20);
-        char *subjectName = malloc(20);
+        char *teacherName = malloc(MAX_NAME_LENGTH);
+        char *subjectName = malloc(MAX_SUBJECT_LENGTH);
         int parsedFields = sscanf(line, "\"%19[^\"]\",\"%19[^\"]\"", teacherName, subjectName);
         // printf("Loop 2\n");
         if (parsedFields == teacherFields)
