@@ -7,3 +7,5 @@ int getYesNoResponse(char *prompt);
 int getPositiveInt();
 
 float getFloat();
+
+float getBoundPositiveFloat(int lowerBound, int upperBound);

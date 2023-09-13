@@ -3,6 +3,9 @@
 #include "userinput.h"
 #include "userfunctions.h"
 
+const float MIN_GRADE = 0.00;
+const float MAX_GRADE = 100.00;
+
 void userAddSubject(StudentsList *list, char *studentName)
 {
     int numOfSubjects = -1;
@@ -28,7 +31,7 @@ void userAddSubject(StudentsList *list, char *studentName)
         if (response > 0)
         {
             printf("\nPlease enter the grade for student %s (studying %s) \n", studentName, subjectName);
-            grade = getFloat();
+            grade = getBoundPositiveFloat(MIN_GRADE, MAX_GRADE);
         }
         else
         {
