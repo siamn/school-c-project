@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include "header.h"
 
+/*
+    (Bonus feature - persiting data)
+    Code in this file needs to be tested more
+    and requires additional error checking.
+*/
+
 const char *teachersFileName = "teachers.csv";
 const char *studentsFileName = "students.csv";
 

@@ -10,12 +10,15 @@
     Continuation of James Tam's School C Project by Siam Islam
 */
 
-#define DEFAULT_STUDENTS_ARRAY_SIZE 2
-#define DEFAULT_TEACHERS_ARRAY_SIZE 2
-#define DEFAULT_SUBJECTS_ARRAY_SIZE 2
+#define DEFAULT_STUDENTS_ARRAY_SIZE 2 // 100
+#define DEFAULT_TEACHERS_ARRAY_SIZE 2 // 100
+#define DEFAULT_SUBJECTS_ARRAY_SIZE 2 // 20
 
-#define MAX_STUDENTS_ARRAY_SIZE 4
-#define MAX_TEACHERS_ARRAY_SIZE 4
+#define MAX_STUDENTS_ARRAY_SIZE 4 // 100000
+#define MAX_TEACHERS_ARRAY_SIZE 4 // 100000
+
+#define MIN_STUDENTS_ARRAY_SIZE 2 // 10
+#define MIN_TEACHERS_ARRAY_SIZE 2 // 10
 
 const int QUIT = 0;
 
@@ -271,6 +274,62 @@ void addTeacher(TeachersList *list, char *teacherName, char *subjectName)
     list->currentSize++;
 }
 
+// DRAFT: NOT FINISHED (EXTRA FEATURE)
+int shrinkTeachersStruct(Teacher ***teachers, int currentSize, int maxSize)
+{
+    int newMaxSize = maxSize;
+    if (currentSize <= 0.25 * maxSize)
+    {
+        newMaxSize = maxSize * 0.5;
+
+        if (newMaxSize < MIN_TEACHERS_ARRAY_SIZE)
+        {
+            if (maxSize > MIN_TEACHERS_ARRAY_SIZE)
+            {
+                newMaxSize = MIN_TEACHERS_ARRAY_SIZE;
+            }
+            else
+            {
+                printf("Min array size has been reached. Memory not shrunk.\n");
+                return maxSize;
+            }
+        }
+
+        printf("Before realloc: %p\n", teachers);
+
+        // TODO: REMEMBER TO FREE MEMORY AFTER SHRINKING
+        // Note: Does realloc auto free memory?
+
+        Teacher **newTeachers = realloc(*teachers, newMaxSize * sizeof(Teacher *));
+        if (newTeachers == NULL)
+        {
+            perror("Unable to reallocate memory.\n");
+            return -1;
+        }
+        *teachers = newTeachers;
+
+        printf("After realloc: %p\n", teachers);
+
+        return newMaxSize;
+    }
+    return maxSize;
+}
+
+// DRAFT: NOT FINISHED (EXTRA FEATURE)
+void removeTeacher(TeachersList *list, char *teacherName)
+{
+    printf("Removing teacher\n");
+    int index = teacherExists(list, teacherName);
+    if (index >= 0)
+    {
+        int lastIndex = list->currentSize - 1;
+        // replace current index with last index and reduce current size
+        list->teachers[index] = list->teachers[lastIndex];
+        list->teachers[lastIndex] = NULL;
+        list->currentSize--;
+    }
+}
+
 void displayStudentNames(StudentsList *list)
 {
     printf("Students:\n");
@@ -439,6 +498,10 @@ int main(void)
 
     readTeachers(teachersList);
     printf("Number of teachers read from file: %d\n", teachersList->currentSize);
+
+    // Testing extra feature:
+    // removeTeacher(teachersList, "Jacob");
+    // displayTeachers(teachersList);
 
     while (option != QUIT)
     {
