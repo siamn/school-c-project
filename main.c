@@ -19,6 +19,11 @@
 
 const int QUIT = 0;
 
+/**
+ * @brief Allocates space for students at startup
+ *
+ * @return Student** pointer to allocated student
+ */
 Student **allocateStudentsStructs(void)
 {
     printf("Allocating memory for struct array. \n");
