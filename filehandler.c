@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include "header.h"
 
+const char *teachersFileName = "teachers.csv";
+const char *studentsFileName = "students.csv";
+
 int saveStudent(FILE *file, Student *student);
 int saveTeacher(FILE *file, Teacher *teacher);
-
-// TODO: read teachers is fixed if I add back in a printf. There is likely something wrong with the memory allocation of
-//  teachers and students arrays
 
 // Returns total number of teachers added after reading from file.
 int readTeachers(TeachersList *list)
@@ -15,7 +15,7 @@ int readTeachers(TeachersList *list)
     // printf("here in read\n");
     const int teacherFields = 2;
     int numOfTeachers = 0;
-    FILE *file = fopen("teachers.csv", "r");
+    FILE *file = fopen(teachersFileName, "r");
     // printf("here in read2\n");
     if (file == NULL)
     {
@@ -34,6 +34,8 @@ int readTeachers(TeachersList *list)
         //("Loop\n");
         char *teacherName = malloc(MAX_NAME_LENGTH);
         char *subjectName = malloc(MAX_SUBJECT_LENGTH);
+        // use STRINGIFY HERE TO TURN MAGIC NUMBER 19 -> MAX_NAME_LENGTH - 1, and
+        // MAX_SUBJECT_LENGTH -1
         int parsedFields = sscanf(line, "\"%19[^\"]\",\"%19[^\"]\"", teacherName, subjectName);
         // printf("Loop 2\n");
         if (parsedFields == teacherFields)
@@ -56,8 +58,8 @@ int readTeachers(TeachersList *list)
 
 int save(StudentsList *studentsList, TeachersList *teachersList)
 {
-    FILE *studentsFile = fopen("students.csv", "w"); // open file in write mode (creates new file if it doesn't already exist)
-    FILE *teachersFile = fopen("teachers.csv", "w");
+    FILE *studentsFile = fopen(studentsFileName, "w"); // open file in write mode (creates new file if it doesn't already exist)
+    FILE *teachersFile = fopen(teachersFileName, "w");
     if (studentsFile == NULL || teachersFile == NULL)
     {
         perror("Unable to open a required file\n");
