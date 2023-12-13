@@ -3,48 +3,36 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
-#include "header.h"
+#include "userinput.h"
+#include "userfunctions.h"
 
 /*
     Continuation of James Tam's School C Project by Siam Islam
 */
 
+#define DEFAULT_STUDENTS_ARRAY_SIZE 100
+#define DEFAULT_TEACHERS_ARRAY_SIZE 100
+#define DEFAULT_SUBJECTS_ARRAY_SIZE 20
+
+#define MAX_STUDENTS_ARRAY_SIZE 100000
+#define MAX_TEACHERS_ARRAY_SIZE 100000
+
+#define MIN_STUDENTS_ARRAY_SIZE 10
+#define MIN_TEACHERS_ARRAY_SIZE 10
+
 const int QUIT = 0;
 
-typedef struct
-{
-    char *subj_name;
-    float grade;
-} Subject;
-
-typedef struct
-{
-    char teacher_name[50];
-    Subject subject;
-} Teacher;
-
-typedef struct
-{
-    char stud_name[50];
-    int subject_count;
-    Subject *subjects;
-} Student;
-
-// check if you can still access unallocated memory when adding students
-// e.g. if num students set to 1, can still add more students and print them out.
-
-/* TODO: Can currently add duplicate subjects
-e.g. add student with subject Math with no grade using option 1
-then use option 2 to add grade for same subject by typing Math for same student
-another math subject is added rather than replacing the existing math subject */
-
-Student **allocate_structs_stud(void)
+/**
+ * @brief Allocates space for students at startup
+ *
+ * @return Student** pointer to allocated student
+ */
+Student **allocateStudentsStructs(void)
 {
     printf("Allocating memory for struct array. \n");
+    int size = DEFAULT_STUDENTS_ARRAY_SIZE;
 
-    const int NUM_OF_STUDENTS = 100;
-
-    Student **students = (Student **)malloc(sizeof(*students) * NUM_OF_STUDENTS);
+    Student **students = (Student **)malloc(sizeof(Student *) * size);
 
     if (students == NULL)
     {
@@ -52,19 +40,13 @@ Student **allocate_structs_stud(void)
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < NUM_OF_STUDENTS; i++)
+    for (int i = 0; i < size; i++)
     {
-        *(students + i) = (Student *)malloc(sizeof(Student));
-        (*(students + i))->subjects = (Subject *)malloc(sizeof(Subject) * 10); // allocate space using malloc() for student subjects;
+        students[i] = (Student *)malloc(sizeof(Student));
 
-        if (*(students + i) == NULL)
+        if (students[i] == NULL)
         {
             perror("Error allocating memory for single struct");
-            exit(EXIT_FAILURE);
-        }
-        if ((*(students + i))->subjects == NULL)
-        {
-            perror("Error allocating memory for subject pointer");
             exit(EXIT_FAILURE);
         }
     }
@@ -72,13 +54,13 @@ Student **allocate_structs_stud(void)
     return (students);
 }
 
-Teacher **allocate_structs_teach(void)
+Teacher **allocateTeachersStructs(void)
 {
     printf("Allocating memory for teacher struct array. \n");
 
-    const int NUM_OF_TEACHERS = 20;
+    const int size = DEFAULT_TEACHERS_ARRAY_SIZE;
 
-    Teacher **teachers = (Teacher **)malloc(sizeof(*teachers) * NUM_OF_TEACHERS);
+    Teacher **teachers = (Teacher **)malloc(sizeof(Teacher *) * size);
 
     if (teachers == NULL)
     {
@@ -86,11 +68,11 @@ Teacher **allocate_structs_teach(void)
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < NUM_OF_TEACHERS; i++)
+    for (int i = 0; i < size; i++)
     {
-        *(teachers + i) = (Teacher *)malloc(sizeof(Teacher));
+        teachers[i] = (Teacher *)malloc(sizeof(Teacher));
 
-        if (*(teachers + i) == NULL)
+        if (teachers[i] == NULL)
         {
             perror("Error allocating memory for single struct");
             exit(EXIT_FAILURE);
@@ -100,11 +82,11 @@ Teacher **allocate_structs_teach(void)
     return (teachers);
 }
 
-int exists(Student **students, char *studentName, int numOfStudents)
+int studentExists(StudentsList *list, char *studentName)
 {
-    for (int i = 0; i < numOfStudents; i++)
+    for (int i = 0; i < list->currentSize; i++)
     {
-        if (strcmp(students[i]->stud_name, studentName) == 0)
+        if (strcmp(list->students[i]->name, studentName) == 0)
         {
             return i;
         }
@@ -112,11 +94,11 @@ int exists(Student **students, char *studentName, int numOfStudents)
     return -1;
 }
 
-int exists_subject(Student *student, char *subject)
+int subjectExistsForStudent(Student *student, char *subject)
 {
-    for (int i = 0; i < student->subject_count; i++)
+    for (int i = 0; i < student->subjectCount; i++)
     {
-        if (strcmp(subject, student->subjects[i].subj_name) == 0)
+        if (strcmp(subject, student->subjects[i].name) == 0)
         {
             return i;
         }
@@ -124,11 +106,11 @@ int exists_subject(Student *student, char *subject)
     return -1;
 }
 
-int exists_teacher(Teacher **teachers, int numOfTeachers, char *teacher)
+int teacherExists(TeachersList *list, char *teacher)
 {
-    for (int i = 0; i < numOfTeachers; i++)
+    for (int i = 0; i < list->currentSize; i++)
     {
-        if (strcmp(teachers[i]->teacher_name, teacher) == 0)
+        if (strcmp(list->teachers[i]->name, teacher) == 0)
         {
             return i;
         }
@@ -136,12 +118,12 @@ int exists_teacher(Teacher **teachers, int numOfTeachers, char *teacher)
     return -1;
 }
 
-int exists_teacher_for_subject(Teacher **teachers, int numOfTeachers, char *subject)
+int teacherExistsForSubject(TeachersList *list, char *subject)
 {
-    for (int i = 0; i < numOfTeachers; i++)
+    for (int i = 0; i < list->currentSize; i++)
     {
-        Teacher *teacher = teachers[i];
-        if (strcmp(subject, teacher->subject.subj_name) == 0)
+        Teacher *teacher = list->teachers[i];
+        if (strcmp(subject, teacher->subject.name) == 0)
         {
             return i;
         }
@@ -149,122 +131,267 @@ int exists_teacher_for_subject(Teacher **teachers, int numOfTeachers, char *subj
     return -1;
 }
 
-int add_student(Student **students, char *studentName)
+int expandStudentsStruct(Student ***students, int currentSize, int maxSize)
 {
-    static int index = 0;
+    int newMaxSize = maxSize;
+    if (currentSize >= 0.5 * maxSize)
+    {
+        newMaxSize = maxSize * 2;
+
+        if (newMaxSize > MAX_STUDENTS_ARRAY_SIZE)
+        {
+            if (maxSize < MAX_STUDENTS_ARRAY_SIZE)
+            {
+                newMaxSize = MAX_STUDENTS_ARRAY_SIZE;
+            }
+            else
+            {
+                printf("Max array size has been reached. Memory not expanded.\n");
+                return maxSize;
+            }
+        }
+
+        // printf("Before realloc: %p\n", students);
+        Student **newStudents = realloc(*students, newMaxSize * sizeof(Student *));
+        if (newStudents == NULL)
+        {
+            perror("Unable to realloc memory.\n");
+            return -1;
+        }
+        *students = newStudents;
+        // printf("After realloc: %p\n", students);
+        for (int i = currentSize; i < newMaxSize; i++)
+        {
+            (*students)[i] = (Student *)malloc(sizeof(Student));
+
+            if ((*students)[i] == NULL)
+            {
+                perror("Error allocating memory for single struct");
+                return -1;
+            }
+        }
+        return newMaxSize;
+    }
+    return maxSize;
+}
+
+int expandTeachersStruct(Teacher ***teachers, int currentSize, int maxSize)
+{
+    int newMaxSize = maxSize;
+    if (currentSize >= 0.5 * maxSize)
+    {
+        newMaxSize = maxSize * 2;
+
+        if (newMaxSize > MAX_TEACHERS_ARRAY_SIZE)
+        {
+            if (maxSize < MAX_TEACHERS_ARRAY_SIZE)
+            {
+                newMaxSize = MAX_TEACHERS_ARRAY_SIZE;
+            }
+            else
+            {
+                printf("Max array size has been reached. Memory not expanded.\n");
+                return maxSize;
+            }
+        }
+
+        // printf("Before realloc: %p\n", teachers);
+
+        Teacher **newTeachers = realloc(*teachers, newMaxSize * sizeof(Teacher *));
+        if (newTeachers == NULL)
+        {
+            perror("Unable to reallocate memory.\n");
+            return -1;
+        }
+        *teachers = newTeachers;
+
+        // printf("After realloc: %p\n", teachers);
+
+        for (int i = currentSize; i < newMaxSize; i++)
+        {
+            (*teachers)[i] = malloc(sizeof(Teacher));
+
+            if ((*teachers)[i] == NULL)
+            {
+                perror("Error allocating memory for single struct");
+                return -1;
+            }
+        }
+        return newMaxSize;
+    }
+    return maxSize;
+}
+
+int addStudent(StudentsList *studentsList, char *studentName)
+{
+    int index = studentsList->currentSize;
     printf("Adding student %s \n", studentName);
+    studentsList->maxSize = expandStudentsStruct(&studentsList->students, studentsList->currentSize, studentsList->maxSize);
 
-    char *ptr = (char *)malloc(sizeof(char) * 20);
-    ptr = studentName;
-    strcpy((*(students + index))->stud_name, studentName);
-
-    for (int i = 0; i < sizeof(students); i++)
+    if (studentsList->currentSize >= studentsList->maxSize)
     {
-        printf("The students array now looks like: %s \n", students[i]->stud_name);
+        printf("No more space available to add students.\n");
+        return -1;
     }
 
-    // initialise the subjects that this particular student studies to 0
-    (*(students + index))->subject_count = 0;
+    Student **students = studentsList->students;
+    students[index]->name = studentName;
 
-    index++;
+    students[index]->subjects = (Subject *)malloc(sizeof(Subject) * DEFAULT_SUBJECTS_ARRAY_SIZE); // allocate space using malloc() for student subjects;
+    if (students[index]->subjects == NULL)
+    {
+        perror("Error allocating memory for subject pointer");
+        return -1;
+    }
+    // initialise the subjects that this particular student studies to 0
+    students[index]->subjectCount = 0;
+
+    studentsList->currentSize++;
 
     printf("\nSuccessfully added student '%s' to the school database system.  \n\n", studentName);
 
-    return index;
+    return 1;
 }
 
-void add_subject(Student **students, char *studentName, char *subjectName, float gradeInput)
+void addTeacher(TeachersList *list, char *teacherName, char *subjectName)
 {
-    printf("Inside add_subject,  student name: %s \n", studentName);
-    for (int i = 0; i < sizeof(students); i++)
+    int index = list->currentSize;
+    printf("Adding teacher %s \n", teacherName);
+    list->maxSize = expandTeachersStruct(&list->teachers, index, list->maxSize);
+
+    if (list->currentSize >= list->maxSize)
     {
-        if (strcasecmp(students[i]->stud_name, studentName) == 0)
+        printf("No more space available to add students.\n");
+        return;
+    }
+
+    list->teachers[index]->name = teacherName;
+    list->teachers[index]->subject.name = subjectName;
+
+    printf("\nSuccessfully added teacher '%s' teaching %s to the school database system.  \n\n", list->teachers[index]->name,
+           list->teachers[index]->subject.name);
+
+    list->currentSize++;
+}
+
+// DRAFT: NOT FINISHED (EXTRA FEATURE)
+int shrinkTeachersStruct(Teacher ***teachers, int currentSize, int maxSize)
+{
+    int newMaxSize = maxSize;
+    if (currentSize <= 0.25 * maxSize)
+    {
+        newMaxSize = maxSize * 0.5;
+
+        if (newMaxSize < MIN_TEACHERS_ARRAY_SIZE)
         {
-            int subject_count = (*(students + i))->subject_count;
+            if (maxSize > MIN_TEACHERS_ARRAY_SIZE)
+            {
+                newMaxSize = MIN_TEACHERS_ARRAY_SIZE;
+            }
+            else
+            {
+                printf("Min array size has been reached. Memory not shrunk.\n");
+                return maxSize;
+            }
+        }
 
-            Subject *subjects = (Subject *)malloc(sizeof(Subject) * 10);
-            subjects->subj_name = subjectName;
-            subjects->grade = gradeInput;
+        // printf("Before realloc: %p\n", teachers);
 
-            Student *currentStudent = students[i];
-            Subject *student_subjects = currentStudent->subjects;
-            student_subjects[subject_count] = *subjects;
+        // TODO: REMEMBER TO FREE MEMORY AFTER SHRINKING
+        // Note: Does realloc auto free memory?
 
-            (*(students + i))->subject_count++;
-            break;
+        Teacher **newTeachers = realloc(*teachers, newMaxSize * sizeof(Teacher *));
+        if (newTeachers == NULL)
+        {
+            perror("Unable to reallocate memory.\n");
+            return -1;
+        }
+        *teachers = newTeachers;
+
+        // printf("After realloc: %p\n", teachers);
+
+        return newMaxSize;
+    }
+    return maxSize;
+}
+
+// DRAFT: NOT FINISHED (EXTRA FEATURE)
+void removeTeacher(TeachersList *list, char *teacherName)
+{
+    printf("Removing teacher\n");
+    int index = teacherExists(list, teacherName);
+    if (index >= 0)
+    {
+        int lastIndex = list->currentSize - 1;
+        // replace current index with last index and reduce current size
+        list->teachers[index] = list->teachers[lastIndex];
+        list->teachers[lastIndex] = NULL;
+        list->currentSize--;
+    }
+}
+
+void displayStudentNames(StudentsList *list)
+{
+    printf("Students:\n");
+    Student **students = list->students;
+    for (int i = 0; i < list->currentSize; i++)
+    {
+        printf("%s\n", students[i]->name);
+    }
+}
+
+void displayTeachers(TeachersList *list)
+{
+    printf("\nTeachers:\n");
+    Teacher **teachers = list->teachers;
+    for (int i = 0; i < list->currentSize; i++)
+    {
+        printf("%s teaches %s\n", teachers[i]->name, teachers[i]->subject.name);
+    }
+    printf("\n");
+}
+
+void addSubject(StudentsList *list, char *studentName, char *subjectName, float gradeInput)
+{
+    printf("Inside addSubject,  student name: %s \n", studentName);
+
+    int studentIndex = studentExists(list, studentName);
+    if (studentIndex >= 0)
+    {
+        printf("Student found.\n");
+        if (list->students[studentIndex]->subjectCount >= DEFAULT_SUBJECTS_ARRAY_SIZE)
+        {
+            printf("Max number of subjects already reached for this student.\n");
+            return;
+        }
+        int subjectIndex = subjectExistsForStudent(list->students[studentIndex], subjectName);
+        if (subjectIndex == -1) // subject does not already exist, so add a new subject
+        {
+            int count = list->students[studentIndex]->subjectCount;
+            if (count < DEFAULT_SUBJECTS_ARRAY_SIZE)
+            {
+                Subject *subjects = list->students[studentIndex]->subjects;
+                subjects[count].name = subjectName;
+                subjects[count].grade = gradeInput;
+                list->students[studentIndex]->subjectCount++;
+            }
+            else
+            {
+                printf("Max amount of subjects for this student has been reached.\n");
+                return;
+            }
+        }
+        else
+        {
+            printf("Subject already exists for this student.\n");
+            return;
         }
     }
 
     printf("\nSuccessfully added subject %s with grade %0.2f for student '%s' to the school database system 😄  \n\n", subjectName, gradeInput, studentName);
-    // for (int i = 0; i < sizeof(students); i++) {
-    //     printf("The students array now looks like: %s \n", students[i]->stud_name);
-    // }
 }
 
-int add_teacher(Teacher **teachers, char *teacherName, char *subjectName)
-{
-    static int index = 0;
-    printf("Adding teacher %s \n", teacherName);
-
-    char *ptr = (char *)malloc(sizeof(char) * 20);
-    ptr = teacherName;
-
-    strcpy((*(teachers + index))->teacher_name, teacherName);
-    (*(teachers + index))->subject.subj_name = subjectName;
-
-    for (int i = 0; i < sizeof(teachers); i++)
-    {
-        printf("The teachers array now looks like: %s \n", teachers[i]->teacher_name);
-    }
-
-    index++;
-
-    printf("\nSuccessfully added teacher '%s' teaching %s to the school database system.  \n\n", teacherName, subjectName);
-
-    return index;
-}
-
-void print_students(Student **students, int numOfStudents)
-{
-    if (numOfStudents == 0)
-    {
-        printf("No students found.");
-        return;
-    }
-
-    for (int i = 0; i < numOfStudents; i++)
-    {
-        printf("%d) STUDENT: %s ", i, students[i]->stud_name);
-        printf("studies ");
-
-        for (int j = 0; j < students[i]->subject_count; j++)
-        {
-            printf("%s (%0.2f)", students[i]->subjects[j].subj_name, students[i]->subjects[j].grade);
-
-            if (j < students[i]->subject_count - 1)
-            {
-                printf(", ");
-            }
-        }
-        printf("\n");
-    }
-}
-
-void print_teachers(Teacher **teachers, int numOfTeachers)
-{
-    if (numOfTeachers == 0)
-    {
-        printf("No teachers found.");
-        return;
-    }
-
-    for (int i = 0; i < numOfTeachers; i++)
-    {
-        printf("\n%d) Teacher '%s' teaches %s \n", (i + 1), teachers[i]->teacher_name, teachers[i]->subject.subj_name);
-    }
-}
-
-void main_menu()
+void displayMenuOptions()
 {
     printf("\n ------------------------------------ \n");
     printf("Welcome to the School Management system \n");
@@ -272,294 +399,113 @@ void main_menu()
     printf("1). Add a new student, subject and grade \n");
     printf("2). Add subject and/or grade to an existing student \n");
     printf("3). Add a teacher and subject taught \n");
-    printf("4). Add a grade for an existing student \n");
+    printf("4). List all teachers and the subjects they teach  \n");
     printf("5). List students studying a particular subject \n");
     printf("6). List the teacher teaching a particular subject \n");
     printf("7). List the grades a particular student has achieved in a subject \n");
     printf("8). List the teachers teaching a particular student \n");
     printf("9). List the students taught by a particular teacher \n");
+    printf("10). List the students taught at this school and optionally their subjects and grades \n");
     printf("0). EXIT \n");
     printf("------------------------------------ \n");
 }
 
-void user_add_subject(Student **students, char *studentName)
+void displaySubject(Student *student)
 {
-    int numOfSubjects = -1;
-    while (numOfSubjects < 0)
+    printf("Student: %s\n", student->name);
+    if (student->subjectCount < 1)
     {
-        printf("Please enter how many subjects you would like to register for '%s'\n", studentName);
-        numOfSubjects = getPositiveInt();
-        if (numOfSubjects == -1)
-        {
-            printf("Encountered an error. Try again.\n");
-        }
-    }
-
-    for (int i = 0; i < numOfSubjects; i++)
-    {
-        char *subjectName = (char *)malloc(sizeof(char) * 20);
-        float grade = 0.0;
-
-        printf("Please enter the subject name (%d out of %d subjects): ", (i + 1), numOfSubjects);
-        char *name = getLimitedLine(20);
-        strcpy(subjectName, name);
-
-        int response = getYesNoResponse("Would you like to enter a grade? (Y/N): \n");
-
-        if (response > 0)
-        {
-            printf("\nPlease enter the grade for student %s (studying %s) \n", studentName, subjectName);
-            grade = getFloat();
-        }
-        else
-        {
-            // printf("You have entered %s. No grade to be entered. \n", grade_option);
-        }
-
-        add_subject(students, studentName, subjectName, grade);
-    }
-    printf("Successfully added all %d subjects for student '%s' \n", numOfSubjects, studentName);
-}
-
-int option_1(Student **students, int totalStudents)
-{
-    long numOfStudents = -1;
-
-    char students_buf[10] = {0};
-    char subjects_buf[4] = {0};
-
-    int response;
-    while (numOfStudents < 0)
-    {
-        printf("Please enter how many students you would like to register: \n");
-        numOfStudents = getPositiveInt();
-        if (numOfStudents == -1)
-        {
-            printf("Encountered an error. Try again.\n");
-        }
-    }
-
-    for (int i = 0; i < numOfStudents; i++)
-    {
-        char *studentName = (char *)malloc(sizeof(char) * 20);
-        printf("Please enter each student name, pressing the Enter key for each: \n");
-        char *name = getLimitedLine(20);
-        strcpy(studentName, name);
-        // fgets(studentName, 20, stdin);
-
-        // printf("Entered studentName: %s \n", studentName);
-
-        // studentName[strcspn(studentName, "\n")] = 0; // removing the new line here
-
-        if (exists(students, studentName, totalStudents) >= 0)
-        {
-            printf("\nThe student '%s' exists in the system already!  Exiting back to main menu ... \n", studentName);
-            return totalStudents;
-        }
-
-        totalStudents = add_student(students, studentName);
-
-        user_add_subject(students, studentName);
-    }
-
-    return totalStudents;
-}
-
-void option_2(Student **students, int numOfStudents)
-{
-    char *studentName = (char *)malloc(sizeof(char) * 20);
-    printf("Please enter an existing student to add a subject and/or grade \n");
-    char *name = getLimitedLine(20);
-    strcpy(studentName, name);
-
-    if (exists(students, studentName, numOfStudents) == -1)
-    {
-        printf("The student '%s' does not exist in the system. Exiting back to main menu ... \n", studentName);
+        printf("No registered subject for this student.\n\n");
         return;
     }
-
-    printf("Student %s has been found! \n", studentName);
-
-    user_add_subject(students, studentName);
+    for (int i = 0; i < student->subjectCount; i++)
+    {
+        Subject subject = student->subjects[i];
+        printf("Studies %s with grade: %0.2f\n", subject.name, subject.grade);
+    }
+    printf("\n");
 }
 
-int option_3(Teacher **teachers, int totalTeachers)
+void freeStudentsList(StudentsList *list)
 {
-    int numOfTeachers;
-
-    printf("Please enter how many teachers you would like to add \n");
-    numOfTeachers = getPositiveInt();
-
-    for (int i = 0; i < numOfTeachers; i++)
+    for (int i = 0; i < list->maxSize; i++)
     {
-        char *teacherName = (char *)malloc(sizeof(char) * 20);
-        char *subjectName = (char *)malloc(sizeof(char) * 20);
-
-        printf("Please enter the teacher name (%d out of %d teachers): \n", (i + 1), numOfTeachers);
-        teacherName = getLimitedLine(20);
-
-        printf("Please enter the subject name (1 subject allowed): \n");
-        subjectName = getLimitedLine(20);
-
-        totalTeachers = add_teacher(teachers, teacherName, subjectName);
-    }
-
-    return totalTeachers;
-}
-
-void option_5(Student **students, int numOfStudents)
-{
-    printf("Please enter the name of the subject you want to find a list of students for: \n");
-    char *subject = getLimitedLine(20);
-    if (numOfStudents == 0)
-    {
-        printf("No students registered.");
-        return;
-    }
-    printf("Students studying %s:\n", subject);
-    int studentsStudyingSubject = 0;
-    for (int i = 0; i < numOfStudents; i++)
-    {
-        Student *student = students[i];
-        if (exists_subject(student, subject) >= 0)
+        // if not NULL, then memory for subjects was allocated successfully
+        // so this must also be freed
+        if (list->students[i]->subjects != NULL)
         {
-            printf("%s\n", student->stud_name);
-            studentsStudyingSubject += 1;
-        }
-    }
-    if (studentsStudyingSubject < 1)
-    {
-        printf("No registered student is currently studying this subject.\n");
-    }
-}
-
-void option_6(Teacher **teachers, int numOfTeachers)
-{
-    printf("Please enter the name of the subject you want to find the teacher for: \n");
-    char *subject = getLimitedLine(20);
-
-    printf("Teacher studying subject %s:\n", subject);
-    int count = 0;
-    for (int i = 0; i < numOfTeachers; i++)
-    {
-        Teacher *teacher = teachers[i];
-        if (strcmp(subject, teacher->subject.subj_name) == 0)
-        {
-            printf("%s", teacher->teacher_name);
-            count++;
-        }
-    }
-    if (count < 1)
-    {
-        printf("No teacher is currently teacher this subject.\n");
-    }
-}
-
-void option_7(Student **students, int numOfStudents)
-{
-    printf("Please enter the name of the student you want to find grades for: \n");
-    char *name = getLimitedLine(20);
-    printf("Please enter the name of the subject you want to find the student's grades for: \n");
-    char *subject = getLimitedLine(20);
-    int studentIndex = exists(students, name, numOfStudents);
-    if (studentIndex >= 0)
-    {
-        Student *student = students[studentIndex];
-        int subjectIndex = exists_subject(student, subject);
-        if (subjectIndex >= 0)
-        {
-            printf("%s's grade for subject %s: %0.2f\n", student->stud_name,
-                   student->subjects[subjectIndex].subj_name,
-                   student->subjects[subjectIndex].grade);
-        }
-        else
-        {
-            printf("Could not find subject %s for this student.\n", subject);
-        }
-    }
-    else
-    {
-        printf("Could not find this student %s in our database.\n", name);
-    }
-}
-
-void option_8(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers)
-{
-    printf("Please enter the name of the student you want to find teachers for: \n");
-    char *name = getLimitedLine(20);
-    int studentIndex = exists(students, name, numOfStudents);
-    if (studentIndex >= 0)
-    {
-        Student *student = students[studentIndex];
-        printf("Teachers teaching %s:\n", student->stud_name);
-        for (int i = 0; i < student->subject_count; i++)
-        {
-            int teacherIndex = exists_teacher_for_subject(teachers, numOfTeachers, student->subjects[i].subj_name);
-            if (teacherIndex >= 0)
+            for (int j = 0; j < DEFAULT_SUBJECTS_ARRAY_SIZE; j++)
             {
-                Teacher *teacher = teachers[teacherIndex];
-                printf("%s teaches %s\n", teacher->teacher_name, student->subjects[i].subj_name);
+                free(list->students[i]->subjects[j].name);
             }
-            else
-            {
-                printf("No teacher found for subject %s\n", student->subjects[i].subj_name);
-            }
+            free(list->students[i]->subjects);
         }
+        free(list->students[i]->name);
+        free(list->students[i]);
     }
-    else
-    {
-        printf("Could not find this student %s in our database.\n", name);
-    }
+    free(list->students);
+    free(list);
 }
 
-void option_9(Student **students, int numOfStudents, Teacher **teachers, int numOfTeachers)
+void freeTeachersList(TeachersList *list)
 {
-    printf("Please enter the name of the teacher you want to find students for: \n");
-    char *name = getLimitedLine(20);
-    int teacherIndex = exists_teacher(teachers, numOfTeachers, name);
-    int count = 0;
-    if (teacherIndex >= 0)
+    for (int i = 0; i < list->maxSize; i++)
     {
-        Teacher *teacher = teachers[teacherIndex];
-        printf("Students taught by teacher %s:\n", teacher->teacher_name);
-        char *subject = teacher->subject.subj_name;
-        for (int i = 0; i < numOfStudents; i++)
-        {
-            Student *student = students[i];
-            int studentIndex = exists_subject(student, subject);
-            if (studentIndex >= 0)
-            {
-                printf("%s\n", student->stud_name);
-                count++;
-            }
-        }
-        if (count < 1)
-        {
-            printf("No students found.\n");
-        }
+        free(list->teachers[i]->name);
+        free(list->teachers[i]->subject.name);
+        free(list->teachers[i]);
     }
-    else
-    {
-        printf("Could not find this teacher %s in our database.\n", name);
-    }
+    free(list->teachers);
+    free(list);
+}
+
+void freeMemory(StudentsList *studentsList, TeachersList *teachersList)
+{
+    freeTeachersList(teachersList);
+    freeStudentsList(studentsList);
 }
 
 int main(void)
 {
-    int numOfStudents;
-    int numOfSubjects;
 
-    Student **students = allocate_structs_stud();
-    Teacher **teachers = allocate_structs_teach();
+    int option = -1;
 
-    int totalStudents = 0;
-    int totalTeachers = 0;
+    // allocate initial arrays of pointers to student/teachers structs
+    Student **students = allocateStudentsStructs();
+    Teacher **teachers = allocateTeachersStructs();
 
-    int option;
+    StudentsList *studentsList = malloc(sizeof(StudentsList) * 1);
+    if (studentsList == NULL)
+    {
+        perror("Couldn't allocate students list.");
+        return -1;
+    }
+
+    TeachersList *teachersList = malloc(sizeof(StudentsList) * 1);
+    if (teachersList == NULL)
+    {
+        perror("Couldn't allocate teachers list.");
+        return -1;
+    }
+
+    studentsList->students = students;
+    studentsList->currentSize = 0;
+    studentsList->maxSize = DEFAULT_STUDENTS_ARRAY_SIZE;
+
+    teachersList->teachers = teachers;
+    teachersList->currentSize = 0;
+    teachersList->maxSize = DEFAULT_TEACHERS_ARRAY_SIZE;
+
+    readTeachers(teachersList);
+    printf("Number of teachers read from file: %d\n", teachersList->currentSize);
+
+    // Testing extra feature:
+    // removeTeacher(teachersList, "Jacob");
+    // displayTeachers(teachersList);
 
     while (option != QUIT)
     {
-        main_menu();
+        displayMenuOptions();
 
         option = getPositiveInt();
 
@@ -572,50 +518,87 @@ int main(void)
         switch (option)
         {
         case 1:
-            totalStudents = option_1(students, totalStudents);
-            ;
+            userAddNewStudents(studentsList);
             break;
         case 2:
-            option_2(students, totalStudents);
+            userAddSubjectToExistingStudent(studentsList);
             break;
         case 3:
-            totalTeachers = option_3(teachers, totalTeachers);
+            userAddNewTeachers(teachersList);
             break;
         case 4:
-            printf("Not implemented. Sorry.\n");
+            displayTeachers(teachersList);
             break;
         case 5:
-            printf("Total number of students: %d \n", totalStudents);
-            print_students(students, totalStudents);
-            printf("Actual: \n\n");
-            option_5(students, totalStudents);
+            userFindStudentsForSubject(studentsList);
             break;
         case 6:
-            print_teachers(teachers, totalTeachers);
-            printf("Actual: \n\n");
-            option_6(teachers, totalTeachers);
+            userFindTeacherForSubject(teachersList);
             break;
         case 7:
-            option_7(students, totalStudents);
+            userFindGradesForStudent(studentsList);
             break;
         case 8:
-            option_8(students, totalStudents, teachers, totalTeachers);
+            userFindTeachersForStudent(studentsList, teachersList);
             break;
         case 9:
-            option_9(students, totalStudents, teachers, totalTeachers);
+            userFindStudentsForTeacher(studentsList, teachersList);
+            break;
+        case 10:
+            userDisplayStudents(studentsList);
             break;
         case 0:
+            printf("Saving...\n");
+            if (save(studentsList, teachersList) == 1)
+            {
+                printf("Saved successfully.\n");
+            }
+            else
+            {
+                printf("Unable to save data.");
+            }
             printf("Exiting program.\n");
             break;
         default:
-            printf("Please enter a valid number from 0 - 9!");
+            printf("Please enter a valid number from 0 - 10!");
             break;
         }
     }
 
-    return 0;
-}
+    // FREE MEMORY HERE
+    freeMemory(studentsList, teachersList);
 
-// add_subject(students, "James", "Chemistry", 95.0);
-// free(students);
-// free(studentNames);
+    return 0;
+
+    // addStudent(studentsList, "Siam");
+    // displayStudentNames(studentsList);
+    // addStudent(studentsList, "Tom");
+    // displayStudentNames(studentsList);
+    // addStudent(studentsList, "Smith");
+    // displayStudentNames(studentsList);
+    // addStudent(studentsList, "Smithx");
+    // displayStudentNames(studentsList);
+    // addSubject(studentsList, "Siam", "Science", 100.00);
+    // userDisplayStudents(studentsList);
+
+    // userFindGradesForStudent(studentsList);
+
+    // userAddNewTeachers(teachersList);
+    // displayTeachers(teachersList);
+
+    // userFindTeacherForSubject(teachersList);
+
+    // userFindTeachersForStudent(studentsList, teachersList);
+    // userFindStudentsForTeacher(studentsList, teachersList);
+
+    // save(studentsList, teachersList);
+    // userAddNewStudents(list);
+    // userDisplayStudents(list);
+
+    // userAddSubjectToExistingStudent(list);
+    // userDisplayStudents(list);
+
+    // userFindStudentsForSubject(list);
+
+    // return 0;
+}

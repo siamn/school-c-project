@@ -55,8 +55,7 @@ int getYesNoResponse(char *msg)
         printf("%s", msg);
         printf("Please type 'yes'/'y'  or 'no'/'n' below:\n");
         input = getLine();
-        printf("%lu\n", strlen(input));
-        printf("%lu\n", strlen("y"));
+
         if (strcmp(input, "yes") == 0 || strcmp(input, "y") == 0)
         {
             free(input); // free input as no longer needed.
@@ -110,22 +109,42 @@ float getFloat()
     char *end;
     float num;
     num = strtof(line, &end);
-    if (end == line || num < 0)
+    if (end == line)
     {
-        if (num == 0)
+
+        if (errno == ERANGE)
         {
-            if (errno == ERANGE)
-            {
-                printf("Input out of range\n");
-            }
-            if (errno == EINVAL)
-            {
-                printf("Could not parse input.\n");
-            }
+            printf("Input out of range\n");
         }
+
         printf("Please try again with a valid number.\n");
-        return -1;
+        free(line); // have to free line as no longer being used after this function exits.
+        return -1.0;
     }
-    free(line); // have to free line as no longer being used after this function exits.
+    free(line);
+
+    // printf("Float: %.2f\n", num);
+    return num;
+}
+
+float getBoundPositiveFloat(int lowerBound, int upperBound)
+{
+    float num = -1.0;
+    while (num == -1.0 || (num < lowerBound || num > upperBound))
+    {
+        num = getFloat();
+        if (num == -1.0)
+        {
+            printf("Try again: \n");
+        }
+        else if (num < lowerBound)
+        {
+            printf("Input is too low. Try again:\n");
+        }
+        else if (num > upperBound)
+        {
+            printf("Input is too high. Try again:\n");
+        }
+    }
     return num;
 }
